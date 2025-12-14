@@ -1,5 +1,5 @@
 :root {
-  --sidebar-width: 280px;
+  --sidebar-width: 310px;
 }
 
 .app-shell {
@@ -586,7 +586,7 @@
 
 .guild-selector > button .guild-name-line {
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   line-height: 1;
   white-space: nowrap;
   overflow: hidden;
@@ -595,19 +595,27 @@
 
 .active-guild-copy {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   min-width: 0;
   flex: 1;
-  align-items: flex-start;
-  gap: 0.15rem;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .active-guild-copy.has-pill {
-  padding: 0.15rem 0;
+  padding: 0.1rem 0;
+}
+
+.active-guild-copy .guild-name-line {
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .active-guild-copy .pill {
-  margin-top: 0.05rem;
   font-size: 0.65rem;
   padding: 0.15rem 0.55rem;
 }
@@ -632,6 +640,12 @@
 .guild-selector .chevron {
   margin-left: auto;
   color: var(--muted);
+  transition: transform 0.2s ease;
+  font-size: 1.35rem;
+}
+
+.guild-selector .chevron.open {
+  transform: rotate(180deg);
 }
 
 .guild-selector ul {
@@ -665,9 +679,16 @@
 
 .guild-selector li button span.guild-name {
   flex: 1;
+  font-size: 0.88rem;
+  text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.guild-selector li button .pill {
+  font-size: 0.62rem;
+  padding: 0.12rem 0.5rem;
 }
 
 .guild-selector li button.active,
@@ -757,6 +778,22 @@
   display: block;
   color: var(--text);
   font-size: 1.1rem;
+  margin-top: 0.35rem;
+}
+
+.plan-insight {
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-insight span:first-child {
+  align-self: flex-start;
+}
+
+.plan-readout {
+  align-self: flex-start;
+  font-size: 1.1rem;
+  color: var(--text);
   margin-top: 0.35rem;
 }
 

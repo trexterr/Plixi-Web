@@ -94,6 +94,39 @@ export const PLAN_COMPARISON = [
   { feature: 'Custom branding', tiers: { free: false, lite: false, premium: true, ultra: true } },
 ];
 
+export const COMMAND_GROUPS = [
+  {
+    title: 'Economy & Transfers',
+    description: 'Core balance management commands for your in-server economy.',
+    commands: ['/trade', '/gift', '/add-money', '/remove-money', '/balance', '/daily', '/work', '/<currency>-leaderboard'],
+  },
+  {
+    title: 'Items & Inventory',
+    description: 'Create, edit, and inspect virtual goods members can equip.',
+    commands: ['/create-item', '/edit-item', '/view-item', '/remove-item', '/add-item', '/inventory', '/item-leaderboard'],
+  },
+  {
+    title: 'Shops & Marketplace',
+    description: 'Sell goods in user shops or server-wide storefronts.',
+    commands: ['/marketplace', '/user-shop', '/serverwide-shop-view', '/serverwide-shop-edit', '/serverwide-shop-buy', '/test-shop'],
+  },
+  {
+    title: 'Auctions & Raffles',
+    description: 'High-stakes raffles and live auction house bidding.',
+    commands: ['/auction-house-add', '/auction-house-bid', '/auction-house-view', '/create-raffle', '/buy-tickets'],
+  },
+  {
+    title: 'Mystery Boxes & Battles',
+    description: 'Hype-driven boxes, battles, and related flows.',
+    commands: ['/create-mystery-box', '/edit-mystery-box', '/view-mystery-boxes', '/buy-mystery-box', '/open-mystery-box', '/box-battles'],
+  },
+  {
+    title: 'Announcements',
+    description: 'Keep members looped in about drops and events.',
+    commands: ['/notifications'],
+  },
+];
+
 export const FEATURE_MODULES = [
   {
     key: 'economy',

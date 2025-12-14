@@ -26,28 +26,6 @@ export default function DashboardTopbar({ isReady }) {
 
   return (
     <div className="dashboard-topbar">
-      <div className="user-chip">
-        {isReady ? (
-          <>
-            <img src={user.avatar} alt={user.username} />
-            <div>
-              <small>Logged in as</small>
-              <strong>
-                {user.username}
-                <span className="tag">#{user.discriminator}</span>
-              </strong>
-            </div>
-          </>
-        ) : (
-          <>
-            <LoadingSkeleton width="42px" height="42px" />
-            <div>
-              <LoadingSkeleton width="120px" height="12px" />
-              <LoadingSkeleton width="160px" height="16px" />
-            </div>
-          </>
-        )}
-      </div>
       <div className="topbar-insights">
         <div>
           <span>Active guild</span>

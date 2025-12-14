@@ -21,22 +21,14 @@ export default function Sidebar() {
 
   return (
     <aside className="dashboard-sidebar">
-      <div className="brand">
-        <div className="glyph">PX</div>
-        <div>
-          <strong>Plixi</strong>
-          <small>Discord control tower</small>
-        </div>
-      </div>
-
       <div className="guild-selector" ref={selectorRef}>
         <button type="button" onClick={() => setSelectorOpen((prev) => !prev)}>
           <div className="guild-avatar" aria-hidden="true">
             {selectedGuild?.icon ?? '🛰️'}
           </div>
-          <div>
-            <p>{selectedGuild?.name ?? 'Select a server'}</p>
-            <small>{selectedGuild?.vanity ?? '—'}</small>
+          <div className={`active-guild-copy ${selectedGuild?.premium ? 'has-pill' : ''}`}>
+            <span className="guild-name-line">{selectedGuild?.name ?? 'Select a server'}</span>
+            {selectedGuild?.premium && <span className="pill">Premium</span>}
           </div>
           <span className="chevron" aria-hidden="true">
             ▾
@@ -57,7 +49,7 @@ export default function Sidebar() {
                   <span className="guild-avatar" aria-hidden="true">
                     {guild.icon}
                   </span>
-                  <span>{guild.name}</span>
+                  <span className="guild-name">{guild.name}</span>
                   {guild.premium && <span className="pill">Premium</span>}
                 </button>
               </li>

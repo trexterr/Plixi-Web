@@ -9,8 +9,8 @@ export default function TopNavigation() {
     <header className="top-nav">
       <Link to="/" className="brand-mark">
         <div className="glyph">PX</div>
-        <div>
-          <strong>Plixi</strong>
+        <div className="brand-copy">
+          <strong>PLIXI</strong>
           <small>{selectedGuild?.name ?? 'Trusted guilds'}</small>
         </div>
       </Link>
