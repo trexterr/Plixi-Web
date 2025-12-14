@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FEATURE_MODULES } from '../data';
+import CommandMatrix from '../components/CommandMatrix';
 
 export default function MarketingHomePage() {
   const highlightedModules = FEATURE_MODULES.slice(0, 6);
@@ -80,6 +81,8 @@ export default function MarketingHomePage() {
           ))}
         </div>
       </section>
+
+      <CommandMatrix />
     </div>
   );
 }
