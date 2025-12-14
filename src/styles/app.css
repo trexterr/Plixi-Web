@@ -16,7 +16,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  padding: 1rem 2.5rem;
+  padding: 1rem 2rem 1rem 1.2rem;
   background: rgba(7, 11, 33, 0.9);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(16px);
@@ -36,8 +36,9 @@
 
 .brand-mark .brand-copy strong {
   display: block;
-  font-size: 1.3rem;
-  letter-spacing: 0.12em;
+  font-size: 1.35rem;
+  letter-spacing: 0.22em;
+  font-weight: 700;
 }
 
 .brand-mark .brand-copy small {
@@ -50,14 +51,15 @@
 }
 
 .brand-mark .glyph {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
   background: linear-gradient(120deg, var(--accent-2), var(--accent));
   display: grid;
   place-items: center;
   font-weight: 700;
   color: #010308;
+  margin-right: 0.2rem;
 }
 
 .top-nav-links {
@@ -91,6 +93,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 12px 30px rgba(62, 99, 255, 0.35);
   color: #010308;
+  padding: 0.65rem 1.4rem;
 }
 
 .icon-btn {
@@ -121,11 +124,6 @@
 
 .brand-mark {
   cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.brand-mark:hover strong {
-  color: var(--accent-2);
 }
 
 .marketing-page {
@@ -751,7 +749,7 @@
   align-items: center;
   gap: 1.5rem;
   background: var(--panel);
-  padding: 1.5rem;
+  padding: 1.2rem 1.5rem;
   border-radius: 24px;
   border: 1px solid var(--border);
   flex-wrap: wrap;

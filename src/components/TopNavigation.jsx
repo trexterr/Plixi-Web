@@ -11,7 +11,6 @@ export default function TopNavigation() {
         <div className="glyph">PX</div>
         <div className="brand-copy">
           <strong>PLIXI</strong>
-          <small>{selectedGuild?.name ?? 'Trusted guilds'}</small>
         </div>
       </Link>
 
@@ -36,7 +35,7 @@ export default function TopNavigation() {
           ⌕
         </button>
         <Link to="/pricing" className="primary-btn">
-          Upgrade to Premium
+          Premium
         </Link>
         <div className="avatar-chip">
           <img src={user.avatar} alt={user.username} />

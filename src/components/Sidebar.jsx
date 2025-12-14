@@ -30,7 +30,7 @@ export default function Sidebar() {
             <span className="guild-name-line">{selectedGuild?.name ?? 'Select a server'}</span>
             {selectedGuild?.premium && <span className="pill">Premium</span>}
           </div>
-          <span className="chevron" aria-hidden="true">
+          <span className={`chevron ${selectorOpen ? 'open' : ''}`} aria-hidden="true">
             ▾
           </span>
         </button>

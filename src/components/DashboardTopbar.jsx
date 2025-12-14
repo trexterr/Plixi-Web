@@ -35,10 +35,10 @@ export default function DashboardTopbar({ isReady }) {
           <span>Members</span>
           {isReady ? <strong>{memberCount}</strong> : <LoadingSkeleton width="80px" />}
         </div>
-        <div>
+        <div className="plan-insight">
           <span>Plan</span>
           {isReady ? (
-            <strong className={isPremium ? 'pill' : ''}>{isPremium ? 'Premium' : user.planTier}</strong>
+            <strong className="plan-readout">{isPremium ? 'Premium' : 'None'}</strong>
           ) : (
             <LoadingSkeleton width="70px" />
           )}

@@ -9,11 +9,11 @@ export default function MarketingHomePage() {
     <div className="marketing-page">
       <section className="marketing-hero">
         <div>
-          <p className="eyebrow">Plixi // Discord automation</p>
-          <h1>All-in-one Discord bot for economies, events, and premium guild ops.</h1>
+          <p className="eyebrow">Plixi // Discord economy bot</p>
+          <h1>The best new-gen economy Discord bot.</h1>
           <p>
-            Plixi combines XP engines, jobs, raffles, and concierge-grade analytics so you can run a thriving community
-            without touching code. Inspired by MEE6, rebuilt for today.
+            Build shops, open mystery boxes, trade with friends, and climb leaderboards — everything your community needs
+            to stay active, competitive, and invested.
           </p>
           <div className="cta-group">
             <Link to="/app" className="primary-btn">
@@ -38,32 +38,12 @@ export default function MarketingHomePage() {
             </li>
           </ul>
         </div>
-        <div className="hero-visual">
-          <div className="hero-card">
-            <p>Discord snippet</p>
-            <div className="mock-message">
-              <div className="avatar" aria-hidden="true">
-                PX
-              </div>
-              <div>
-                <strong>/work</strong>
-                <p>Earn +180 credits • cooldown 6h • auto tax 5%</p>
-              </div>
-            </div>
-            <div className="pulse" />
-          </div>
-          <div className="hero-card secondary">
-            <p>Dashboard</p>
-            <strong>Live preview</strong>
-            <span>Sliders update instantly</span>
-          </div>
-        </div>
       </section>
 
       <section id="features" className="marketing-features">
         <header>
-          <p className="eyebrow">Feature suite</p>
-          <h2>Everything you expect from a MEE6-class dashboard</h2>
+          <p className="eyebrow">Features</p>
+          <h2>Everything you'd expect from the best Discord Economy Bot</h2>
           <p>Toggle modules on/off, gate premium perks, and configure every detail from an elegant SPA.</p>
         </header>
         <div className="marketing-feature-grid">
