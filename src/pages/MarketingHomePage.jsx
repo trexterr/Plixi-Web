@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { FEATURE_MODULES } from '../data';
 import CommandMatrix from '../components/CommandMatrix';
+import plixiAvatar from '../assets/PLIXI_OFFICIAL_PFP.png';
+import heroArt from '../assets/chatgpt-hero.png';
 
 export default function MarketingHomePage() {
   const highlightedModules = FEATURE_MODULES.slice(0, 6);
@@ -37,6 +39,18 @@ export default function MarketingHomePage() {
               <span>blurred upsells and toasts</span>
             </li>
           </ul>
+        </div>
+        <div className="hero-visual">
+          <div className="hero-image main">
+            <img src={heroArt} alt="Plixi configuration preview" />
+          </div>
+          <div className="hero-image badge">
+            <img src={plixiAvatar} alt="Plixi avatar" />
+            <div>
+              <strong>Plixi</strong>
+              <span>Discord Economy Bot</span>
+            </div>
+          </div>
         </div>
       </section>
 
