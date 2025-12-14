@@ -1,6 +1,5 @@
 export const TOP_NAV_LINKS = [
   { label: 'Dashboard', to: '/app', end: true },
-  { label: 'Features', to: { pathname: '/', hash: '#features' }, end: false },
   { label: 'Premium', to: '/pricing', end: true },
   { label: 'Docs', to: '/docs', end: true },
 ];
@@ -167,7 +166,7 @@ export const FEATURE_MODULES = [
   {
     key: 'mysteryBoxes',
     title: 'Mystery Boxes',
-    description: 'Cinematic unboxings with pity timers, rare pools, and custom skins.',
+    description: 'Create fully custom mystery boxes with rewards, rarities, and exciting randomized openings.',
     icon: '🎁',
     category: 'management',
     premium: false,

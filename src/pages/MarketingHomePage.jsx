@@ -1,19 +1,18 @@
 import { Link } from 'react-router-dom';
 import { FEATURE_MODULES } from '../data';
 import CommandMatrix from '../components/CommandMatrix';
-import plixiAvatar from '../assets/PLIXI_OFFICIAL_PFP.png';
-import heroArt from '../assets/chatgpt-hero.png';
 
 export default function MarketingHomePage() {
   const highlightedModules = FEATURE_MODULES.slice(0, 6);
 
   return (
     <div className="marketing-page">
-      <section className="marketing-hero">
-        <div>
+      <section className="marketing-hero hero-with-image">
+        <div className="hero-overlay" aria-hidden="true" />
+        <div className="hero-content">
           <p className="eyebrow">Plixi // Discord economy bot</p>
           <h1>The best new-gen economy Discord bot.</h1>
-          <p>
+          <p className="lead">
             Build shops, open mystery boxes, trade with friends, and climb leaderboards — everything your community needs
             to stay active, competitive, and invested.
           </p>
@@ -22,7 +21,7 @@ export default function MarketingHomePage() {
               Add to Discord
             </Link>
             <a href="#features" className="ghost-btn">
-              Explore Features
+              See features
             </a>
           </div>
           <ul className="hero-highlights">
@@ -39,18 +38,6 @@ export default function MarketingHomePage() {
               <span>blurred upsells and toasts</span>
             </li>
           </ul>
-        </div>
-        <div className="hero-visual">
-          <div className="hero-image main">
-            <img src={heroArt} alt="Plixi configuration preview" />
-          </div>
-          <div className="hero-image badge">
-            <img src={plixiAvatar} alt="Plixi avatar" />
-            <div>
-              <strong>Plixi</strong>
-              <span>Discord Economy Bot</span>
-            </div>
-          </div>
         </div>
       </section>
 
