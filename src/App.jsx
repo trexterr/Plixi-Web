@@ -15,6 +15,8 @@ import PremiumPage from './pages/dashboard/PremiumPage';
 import LogsPage from './pages/dashboard/LogsPage';
 import LeaderboardsPage from './pages/dashboard/LeaderboardsPage';
 import SettingsPage from './pages/dashboard/SettingsPage';
+import MarketingHomePage from './pages/MarketingHomePage';
+import PricingPage from './pages/PricingPage';
 import ToastProvider from './components/ToastProvider';
 import TopNavigation from './components/TopNavigation';
 
@@ -34,7 +36,9 @@ function App() {
             <div className="app-shell">
               <TopNavigation />
               <Routes>
-                <Route path="/" element={<DashboardShell />}>
+                <Route path="/" element={<MarketingHomePage />} />
+                <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/app" element={<DashboardShell />}>
                   <Route index element={<DashboardHomePage />} />
                   <Route path="economy" element={<EconomyPage />} />
                   <Route path="jobs" element={<JobsPage />} />

@@ -20,7 +20,7 @@ export default function TopNavigation() {
           <NavLink
             key={link.label}
             to={link.to}
-            end={link.to === '/'}
+            end={Boolean(link.end)}
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
             {link.label}
@@ -35,7 +35,7 @@ export default function TopNavigation() {
         <button type="button" className="icon-btn" aria-label="Search">
           ⌕
         </button>
-        <Link to="/premium" className="primary-btn">
+        <Link to="/pricing" className="primary-btn">
           Upgrade to Premium
         </Link>
         <div className="avatar-chip">

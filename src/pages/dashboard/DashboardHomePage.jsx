@@ -59,7 +59,7 @@ export default function DashboardHomePage() {
             you need lives in this dashboard.
           </p>
           <div className="hero-actions">
-            <button type="button" className="primary-btn" onClick={() => navigate('/premium')}>
+            <button type="button" className="primary-btn" onClick={() => navigate('/pricing')}>
               Upgrade now
             </button>
             <button type="button" className="ghost-btn" onClick={() => navigate('/logs')}>

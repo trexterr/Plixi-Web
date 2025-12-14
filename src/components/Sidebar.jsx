@@ -75,7 +75,7 @@ export default function Sidebar() {
                 key={item.key}
                 to={item.path}
                 className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-                end={item.path === '/'}
+                end={item.path === '/app'}
               >
                 <span aria-hidden="true">{item.icon}</span>
                 {item.label}

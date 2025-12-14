@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SectionHeader from '../../components/SectionHeader';
 import SettingCard from '../../components/SettingCard';
 import ToggleSwitch from '../../components/ToggleSwitch';
@@ -11,6 +12,7 @@ export default function PremiumPage() {
   const { activeRecord, updateSection, resetSection, saveSection } = useDashboardData();
   const { selectedGuild, isPremium } = useSelectedGuild();
   const { showToast } = useToast();
+  const navigate = useNavigate();
   const premium = activeRecord.settings.premium;
   const lastSaved = activeRecord.lastSaved.premium;
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -93,7 +95,7 @@ export default function PremiumPage() {
                 <li>Priority discord support</li>
               </ul>
             </div>
-            <button type="button" className="primary-btn" disabled={isPremium}>
+            <button type="button" className="primary-btn" disabled={isPremium} onClick={() => navigate('/pricing')}>
               {isPremium ? 'Already upgraded' : 'Upgrade now'}
             </button>
           </div>
