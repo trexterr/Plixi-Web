@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import SectionHeader from '../../components/SectionHeader';
 import ToggleSwitch from '../../components/ToggleSwitch';
 import ModuleCard from '../../components/ModuleCard';
+import NumberInput from '../../components/NumberInput';
 import useGuildSettings from '../../hooks/useGuildSettings';
 import { useToast } from '../../components/ToastProvider';
 
@@ -53,6 +54,7 @@ const normalizeBehavior = (behavior = {}) => ({
   logOpenings: Boolean(behavior.logOpenings),
   stockLimited: Boolean(behavior.stockLimited),
   forSaleOverride: Boolean(behavior.forSaleOverride),
+  openOnPurchase: behavior.openOnPurchase ?? true,
 });
 
 const buildBoxesDraft = (source = {}) => ({
@@ -180,8 +182,8 @@ export default function GuildBoxesPage() {
     return issues;
   }, [boxesDraft.collection]);
 
-  const hasBlockingIssue = Object.keys(boxIssues).length > 0;
   const editingIssue = editingBox ? boxIssues[editingBox.id] ?? null : null;
+  const hasBlockingIssue = editingBox ? Boolean(editingIssue) : Object.keys(boxIssues).length > 0;
 
   const hasUnsavedChanges = useMemo(() => {
     const baseChanged = JSON.stringify(boxesDraft) !== JSON.stringify(guildBoxes);
@@ -304,7 +306,6 @@ export default function GuildBoxesPage() {
       boxBattles: serializeBoxBattles(boxBattlesDraft),
     }));
     saveGuild('Mystery boxes saved');
-    setEditingBoxId(null);
   };
 
   const handleDiscard = () => {
@@ -323,7 +324,7 @@ export default function GuildBoxesPage() {
       {hasUnsavedChanges && (
         <div className="page-actions__stack">
           {hasBlockingIssue && <span className="error-text">Resolve box odds before saving</span>}
-          <div>
+          <div className="page-actions__buttons">
             <button type="button" className="ghost-btn" onClick={handleDiscard}>
               Discard changes
             </button>
@@ -393,21 +394,11 @@ export default function GuildBoxesPage() {
                         </td>
                         <td>
                           <div className={`percent-input ${editingIssue ? 'has-error' : ''}`}>
-                            <input
-                              type="number"
+                            <NumberInput
                               min={0}
                               max={100}
                               value={item.odds === '' ? '' : item.odds}
-                              onChange={(event) =>
-                                updateBoxItem(editingBox.id, item.id, {
-                                  odds: event.target.value === '' ? '' : Number(event.target.value),
-                                })
-                              }
-                              onBlur={(event) => {
-                                if (event.target.value === '') {
-                                  updateBoxItem(editingBox.id, item.id, { odds: Number(event.target.min ?? 0) });
-                                }
-                              }}
+                              onChange={(value) => updateBoxItem(editingBox.id, item.id, { odds: value })}
                               onKeyDown={(event) => {
                                 if (event.key === 'Enter') {
                                   reorderBoxItems(editingBox.id);
@@ -418,20 +409,10 @@ export default function GuildBoxesPage() {
                           </div>
                         </td>
                         <td>
-                          <input
-                            type="number"
+                          <NumberInput
                             min={0}
                             value={item.quantity === '' ? '' : item.quantity}
-                            onChange={(event) =>
-                              updateBoxItem(editingBox.id, item.id, {
-                                quantity: event.target.value === '' ? '' : Number(event.target.value),
-                              })
-                            }
-                            onBlur={(event) => {
-                              if (event.target.value === '') {
-                                updateBoxItem(editingBox.id, item.id, { quantity: Number(event.target.min ?? 0) });
-                              }
-                            }}
+                            onChange={(value) => updateBoxItem(editingBox.id, item.id, { quantity: value })}
                             onKeyDown={(event) => {
                               if (event.key === 'Enter') {
                                 reorderBoxItems(editingBox.id);
@@ -504,26 +485,16 @@ export default function GuildBoxesPage() {
 
       <div className="card-grid">
         <ModuleCard
-          icon="🪄"
+          icon="⚙️"
           title="General"
           description="Enable boxes, control animation, and global logging."
           status={boxesDraft.enabled ? 'Active' : 'Disabled'}
         >
           <ToggleSwitch
-            label="Enable mystery boxes"
+            label="Enable Mystery Boxes"
             checked={boxesDraft.enabled}
             onChange={(value) => setBoxesDraft((prev) => ({ ...prev, enabled: value }))}
           />
-          <label className="text-control">
-            <span>Animation background</span>
-            <select value={boxesDraft.behavior.animationBackground} onChange={(event) => updateBehavior({ animationBackground: event.target.value })}>
-              {ANIMATION_BACKGROUNDS.map((option) => (
-                <option key={option.key} value={option.key}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
           <label className="text-control">
             <span>Animation speed</span>
             <select value={boxesDraft.behavior.animationSpeed} onChange={(event) => updateBehavior({ animationSpeed: event.target.value })}>
@@ -535,7 +506,7 @@ export default function GuildBoxesPage() {
             </select>
           </label>
           <ToggleSwitch
-            label="Announce rare openings"
+            label="Announce Rare Openings"
             checked={boxesDraft.behavior.announceRare}
             onChange={(value) => updateBehavior({ announceRare: value })}
           />
@@ -546,25 +517,24 @@ export default function GuildBoxesPage() {
             </label>
           )}
           <ToggleSwitch
-            label="Log every opening"
+            label="Log Every Opening"
             checked={boxesDraft.behavior.logOpenings}
             onChange={(value) => updateBehavior({ logOpenings: value })}
           />
           <ToggleSwitch
-            label="Stock limited"
-            checked={boxesDraft.behavior.stockLimited}
-            onChange={(value) => updateBehavior({ stockLimited: value })}
-          />
-          <ToggleSwitch
-            label="Override for-sale switches"
-            description="Force all boxes on sale for events."
-            checked={boxesDraft.behavior.forSaleOverride}
-            onChange={(value) => updateBehavior({ forSaleOverride: value })}
+            label="Open Boxes On Purchase"
+            description={
+              <>
+                Toggle <strong>OFF</strong> to store purchased boxes in inventory.
+              </>
+            }
+            checked={boxesDraft.behavior.openOnPurchase}
+            onChange={(value) => updateBehavior({ openOnPurchase: value })}
           />
         </ModuleCard>
 
         <ModuleCard
-          icon="🎯"
+          icon="🛠️"
           title="Customization"
           description="Pick a crate to edit metadata, price, and drop odds."
           status={`${boxesDraft.collection.length} box${boxesDraft.collection.length === 1 ? '' : 'es'}`}
@@ -586,40 +556,40 @@ export default function GuildBoxesPage() {
           </div>
           {selectedBox ? (
             <>
-              <div className="input-row">
-                <label className="text-control">
-                  <span>Name</span>
-                  <input value={selectedBox.name} onChange={(event) => updateBox(selectedBox.id, { name: event.target.value })} />
-                </label>
-                <label className="text-control">
-                  <span>Accent color</span>
-                  <input type="color" value={selectedBox.color} onChange={(event) => updateBox(selectedBox.id, { color: event.target.value })} />
-                </label>
-                <label className="text-control">
-                  <span>Price</span>
+              <div className="field-stack">
+                <div className="field-row">
+                  <span className="field-row__label">Name</span>
                   <input
-                    type="number"
+                    value={selectedBox.name}
+                    onChange={(event) => updateBox(selectedBox.id, { name: event.target.value })}
+                  />
+                </div>
+                <div className="field-row">
+                  <span className="field-row__label">Color</span>
+                  <input
+                    type="text"
+                    value={selectedBox.color}
+                    placeholder="#7c3aed"
+                    onChange={(event) => updateBox(selectedBox.id, { color: event.target.value })}
+                  />
+                </div>
+                <div className="field-row">
+                  <span className="field-row__label">Price</span>
+                  <NumberInput
                     min={0}
                     value={selectedBox.price === '' ? '' : selectedBox.price}
-                    onChange={(event) =>
-                      updateBox(selectedBox.id, { price: event.target.value === '' ? '' : Number(event.target.value) })
-                    }
-                    onBlur={(event) => {
-                      if (event.target.value === '') {
-                        updateBox(selectedBox.id, { price: Number(event.target.min ?? 0) });
-                      }
-                    }}
+                    onChange={(value) => updateBox(selectedBox.id, { price: value })}
                   />
-                </label>
+                </div>
               </div>
               <ToggleSwitch
-                label="For sale"
+                label="For Sale"
                 checked={selectedBox.forSale}
                 onChange={(value) => updateBox(selectedBox.id, { forSale: value })}
               />
               <div className="box-editor-launch">
                 <button type="button" className="primary-btn" onClick={() => enterEditor(selectedBox.id)}>
-                  Edit box contents
+                  Edit Box Contents
                 </button>
                 <p className="helper-text">Open a focused view to manage this crate’s loot table.</p>
               </div>
@@ -639,7 +609,7 @@ export default function GuildBoxesPage() {
           status={boxBattlesDraft.enabled ? 'Active' : 'Disabled'}
         >
           <ToggleSwitch
-            label="Enable box battles"
+            label="Enable Box Battles"
             checked={boxBattlesDraft.enabled}
             onChange={(value) => setBoxBattlesDraft({ enabled: value })}
           />
