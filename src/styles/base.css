@@ -17,6 +17,11 @@
   --shadow: 0 20px 60px rgba(6, 8, 20, 0.6);
 }
 
+html {
+  scroll-behavior: smooth;
+  background: rgba(7, 11, 33, 0.98);
+}
+
 *,
 *::before,
 *::after {
@@ -46,9 +51,32 @@ input,
 select {
   font: inherit;
   color: inherit;
+  outline: none;
+}
+
+button:focus,
+button:focus-visible,
+input:focus,
+input:focus-visible,
+select:focus,
+select:focus-visible,
+textarea:focus,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 img {
   max-width: 100%;
   display: block;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

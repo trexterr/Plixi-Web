@@ -529,11 +529,12 @@
 .raffle-summary li {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
-  padding: 0.8rem 1rem;
+  padding: 0.8rem 1rem 2.1rem;
   background: rgba(255, 255, 255, 0.02);
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  position: relative;
 }
 
 .raffle-summary li div {
@@ -562,6 +563,9 @@
   margin-top: 0.35rem;
   display: flex;
   justify-content: flex-end;
+  position: absolute;
+  bottom: 0.95rem;
+  right: 0.75rem;
 }
 
 .raffle-detail {
@@ -641,7 +645,8 @@
   gap: 0.5rem;
   max-height: 260px;
   overflow-y: auto;
-  padding-right: 0.3rem;
+  padding-right: 0.8rem;
+  margin-right: -0.5rem;
 }
 
 .raffle-detail__buyers ul::-webkit-scrollbar {
@@ -654,7 +659,7 @@
 }
 
 .raffle-detail__buyers ul::-webkit-scrollbar-thumb {
-  background: var(--panel);
+  background: #1b254f;
   border-radius: 999px;
 }
 
