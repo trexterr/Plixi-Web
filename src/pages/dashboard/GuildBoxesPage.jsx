@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import SectionHeader from '../../components/SectionHeader';
 import ToggleSwitch from '../../components/ToggleSwitch';
@@ -25,6 +25,10 @@ export default function GuildBoxesPage() {
   const [editingBoxId, setEditingBoxId] = useState(null);
   const [editorSnapshot, setEditorSnapshot] = useState(null);
   const [editorError, setEditorError] = useState('');
+  const lastLocationKeyRef = useRef(location.key);
+  const guildSnapshotRef = useRef(guildSnapshot);
+  const hasGuildChangesRef = useRef(false);
+  const editingBoxIdRef = useRef(editingBoxId);
   const availableBoxItems = useMemo(() => {
     const names = new Set();
     (guild.items?.catalog ?? []).forEach((item) => names.add(item.name));
@@ -64,6 +68,36 @@ export default function GuildBoxesPage() {
       setGuildSnapshot(JSON.stringify(guild));
     }
   }, [lastSaved]);
+
+  useEffect(() => {
+    guildSnapshotRef.current = guildSnapshot;
+  }, [guildSnapshot]);
+
+  useEffect(() => {
+    hasGuildChangesRef.current = hasGuildChanges;
+  }, [hasGuildChanges]);
+
+  useEffect(() => {
+    editingBoxIdRef.current = editingBoxId;
+  }, [editingBoxId]);
+
+  useEffect(
+    () => () => {
+      if (editingBoxIdRef.current) {
+        exitEditor(true);
+        return;
+      }
+      if (hasGuildChangesRef.current) {
+        try {
+          const snapshot = JSON.parse(guildSnapshotRef.current);
+          updateGuild(() => snapshot);
+        } catch {
+          // ignore restore errors
+        }
+      }
+    },
+    [], // run cleanup on unmount only
+  );
 
   useEffect(() => {
     if (!editingBoxId) return;
@@ -613,3 +647,16 @@ export default function GuildBoxesPage() {
     </div>
   );
 }
+  useEffect(
+    () => () => {
+      if (editingBoxId) return;
+      if (!hasGuildChanges) return;
+      try {
+        const snapshot = JSON.parse(guildSnapshot);
+        updateGuild(() => snapshot);
+      } catch {
+        // ignore corrupted snapshot
+      }
+    },
+    [editingBoxId, hasGuildChanges, guildSnapshot, updateGuild],
+  );
