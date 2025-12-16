@@ -21,7 +21,14 @@ export const SIDEBAR_GROUPS = [
       { key: 'guild-raffles', label: 'Raffles', icon: '🎟️', path: '/app/guild/raffles' },
       { key: 'guild-shop', label: 'Server Shop', icon: '🏪', path: '/app/guild/shop' },
       { key: 'guild-leaderboards', label: 'Leaderboards', icon: '🏆', path: '/app/guild/leaderboards' },
-      { key: 'guild-audit', label: 'Audit & Billing', icon: '🛡️', path: '/app/guild/audit' },
+    ],
+  },
+  {
+    title: 'Management',
+    items: [
+      { key: 'guild-audit', label: 'Audit Logs', icon: '🛡️', path: '/app/guild/audit' },
+      { key: 'guild-billing', label: 'Billing', icon: '💳', path: '/app/guild/billing' },
+      { key: 'guild-system', label: 'Server Settings', icon: '⚙️', path: '/app/guild/system' },
     ],
   },
 ];
@@ -600,6 +607,14 @@ export const DEFAULT_SETTINGS = {
       admin: true,
       trades: true,
       boxes: true,
+    },
+    auditLogChannels: {
+      economy: '#economy-audit',
+      items: '#items-audit',
+      shops: '#shops-audit',
+      admin: '#admin-audit',
+      trades: '#trades-audit',
+      boxes: '#boxes-audit',
     },
     billing: {
       plan: 'Creator',
