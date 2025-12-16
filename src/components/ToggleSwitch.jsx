@@ -1,6 +1,8 @@
-export default function ToggleSwitch({ checked, onChange, label, description, disabled }) {
+export default function ToggleSwitch({ checked, onChange, label, description, disabled, className = '' }) {
+  const rootClassName = ['toggle-switch', disabled ? 'is-disabled' : '', className].filter(Boolean).join(' ');
+
   return (
-    <label className={`toggle-switch ${disabled ? 'is-disabled' : ''}`}>
+    <label className={rootClassName}>
       <input
         type="checkbox"
         checked={checked}

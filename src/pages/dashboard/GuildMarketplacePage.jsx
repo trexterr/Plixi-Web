@@ -2,10 +2,25 @@ import SectionHeader from '../../components/SectionHeader';
 import ToggleSwitch from '../../components/ToggleSwitch';
 import SliderInput from '../../components/SliderInput';
 import ModuleCard from '../../components/ModuleCard';
+import NumberInput from '../../components/NumberInput';
 import useGuildSettings from '../../hooks/useGuildSettings';
+
+const DEFAULT_APPEARANCE = { title: 'Marketplace', color: '#7c3aed' };
 
 export default function GuildMarketplacePage() {
   const { guild, updateGuild, saveGuild, selectedGuild, lastSaved } = useGuildSettings();
+  const appearance = guild.marketplaceSuite.appearance ?? DEFAULT_APPEARANCE;
+  const isCustomized = appearance.title !== DEFAULT_APPEARANCE.title || appearance.color !== DEFAULT_APPEARANCE.color;
+
+  const updateAppearance = (patch) => {
+    updateGuild((prev) => ({
+      ...prev,
+      marketplaceSuite: {
+        ...prev.marketplaceSuite,
+        appearance: { ...(prev.marketplaceSuite.appearance ?? {}), ...patch },
+      },
+    }));
+  };
 
   return (
     <div className="page-stack guild-dashboard">
@@ -17,12 +32,7 @@ export default function GuildMarketplacePage() {
       />
 
       <div className="card-grid">
-        <ModuleCard
-          icon="🛒"
-          title="Marketplace core"
-          description="Listings, pagination, and taxes."
-          status={guild.marketplaceSuite.enabled ? 'Active' : 'Disabled'}
-        >
+        <ModuleCard icon="🛒" title="Settings" description="Listings, pagination, and taxes." status={guild.marketplaceSuite.enabled ? 'Active' : 'Disabled'}>
           <ToggleSwitch
             label="Enable marketplace"
             checked={guild.marketplaceSuite.enabled}
@@ -48,80 +58,38 @@ export default function GuildMarketplacePage() {
             }
           />
           {guild.marketplaceSuite.feesEnabled && (
-            <SliderInput
-              label="Fee percent"
-              min={0}
-              max={25}
-              value={guild.marketplaceSuite.feePercent}
-              onChange={(value) =>
-                updateGuild((prev) => ({ ...prev, marketplaceSuite: { ...prev.marketplaceSuite, feePercent: value } }))
-              }
-            />
-          )}
-        </ModuleCard>
-
-        <ModuleCard
-          icon="🤝"
-          title="Trades & gifts"
-          description="Peer-to-peer transfers and logging."
-          status={guild.marketplaceSuite.trading.enabled ? 'Active' : 'Disabled'}
-        >
-          <ToggleSwitch
-            label="Enable trading"
-            checked={guild.marketplaceSuite.trading.enabled}
-            onChange={(value) =>
-              updateGuild((prev) => ({
-                ...prev,
-                marketplaceSuite: {
-                  ...prev.marketplaceSuite,
-                  trading: { ...prev.marketplaceSuite.trading, enabled: value },
-                },
-              }))
-            }
-          />
-          <ToggleSwitch
-            label="Enable gifting"
-            checked={guild.marketplaceSuite.trading.giftingEnabled}
-            onChange={(value) =>
-              updateGuild((prev) => ({
-                ...prev,
-                marketplaceSuite: {
-                  ...prev.marketplaceSuite,
-                  trading: { ...prev.marketplaceSuite.trading, giftingEnabled: value },
-                },
-              }))
-            }
-          />
-          <ToggleSwitch
-            label="Trade logs"
-            checked={guild.marketplaceSuite.trading.tradeLogs}
-            onChange={(value) =>
-              updateGuild((prev) => ({
-                ...prev,
-                marketplaceSuite: {
-                  ...prev.marketplaceSuite,
-                  trading: { ...prev.marketplaceSuite.trading, tradeLogs: value },
-                },
-              }))
-            }
-          />
-          {guild.marketplaceSuite.trading.tradeLogs && (
             <label className="text-control">
-              <span>Trade log channel</span>
-              <input
-                value={guild.marketplaceSuite.trading.tradeChannel}
-                onChange={(event) =>
-                  updateGuild((prev) => ({
-                    ...prev,
-                    marketplaceSuite: {
-                      ...prev.marketplaceSuite,
-                      trading: { ...prev.marketplaceSuite.trading, tradeChannel: event.target.value },
-                    },
-                  }))
+              <span>Fee percent</span>
+              <NumberInput
+                min={0}
+                max={25}
+                suffix="%"
+                value={guild.marketplaceSuite.feePercent}
+                onChange={(value) =>
+                  updateGuild((prev) => ({ ...prev, marketplaceSuite: { ...prev.marketplaceSuite, feePercent: value } }))
                 }
               />
             </label>
           )}
+        </ModuleCard>
+
+        <ModuleCard icon="🎨" title="Appearance" description="Update the marketplace name and color accents." status={isCustomized ? 'Customized' : 'Default'}>
+          <label className="text-control">
+            <span>Display title</span>
+            <input value={appearance.title} onChange={(event) => updateAppearance({ title: event.target.value })} placeholder="Marketplace" />
+          </label>
+          <label className="text-control">
+            <span>Color</span>
+            <input
+              type="text"
+              value={appearance.color}
+              placeholder="#7c3aed"
+              onChange={(event) => updateAppearance({ color: event.target.value })}
+            />
+          </label>
+          <button type="button" className="ghost-btn" onClick={() => updateAppearance(DEFAULT_APPEARANCE)} disabled={!isCustomized}>
+            Reset To Default
+          </button>
         </ModuleCard>
       </div>
 

@@ -202,7 +202,7 @@ export default function GuildEconomyPage() {
         <div className="job-editor">
           <div className="job-editor__top">
             <button type="button" className="ghost-btn ghost-btn--xs" onClick={() => setEditingJobs(false)}>
-              ← Back to /Work
+              ← Back to Work Command
             </button>
             <div className="job-editor__actions">
               <button type="button" className="ghost-btn ghost-btn--xs" onClick={addJob} disabled={availableJobs >= jobLimit}>
@@ -257,7 +257,7 @@ export default function GuildEconomyPage() {
           icon="💰"
           title="Currency"
           description="Name, decimals, and audit logging controls."
-          status={guild.currency.auditLog.enabled ? 'Active' : 'Disabled'}
+          status="Active"
         >
           <label className="text-control">
             <span>Currency name</span>
@@ -317,12 +317,12 @@ export default function GuildEconomyPage() {
 
         <ModuleCard
           icon="🎁"
-          title="Daily rewards"
+          title="Daily Rewards"
           description="Base payouts, cooldowns, bonuses, and streaks."
-          status={guild.daily.enabled ? 'Active' : 'Disabled'}
+          status={guild.daily.enabled ? 'Enabled' : 'Disabled'}
         >
           <ToggleSwitch
-            label="Enable /daily"
+            label="Enable Daily Rewards"
             checked={guild.daily.enabled}
             onChange={(value) => updateGuild((prev) => ({ ...prev, daily: { ...prev.daily, enabled: value } }))}
           />
@@ -346,13 +346,11 @@ export default function GuildEconomyPage() {
               />
             </label>
           </div>
-          <button type="button" className="primary-btn" onClick={() => setEditingRoles(true)}>
-            Edit Role Bonuses
-          </button>
           <ToggleSwitch
             label="Enable streak bonus"
             description="Premium unlocks aggressive multipliers."
             checked={guild.daily.streak.enabled}
+            className="toggle-switch--premium"
             onChange={(value) =>
               updateGuild((prev) => ({ ...prev, daily: { ...prev.daily, streak: { ...prev.daily.streak, enabled: value } } }))
             }
@@ -393,11 +391,14 @@ export default function GuildEconomyPage() {
               </label>
             </div>
           )}
+          <button type="button" className="primary-btn" onClick={() => setEditingRoles(true)}>
+            Edit Role Bonuses
+          </button>
         </ModuleCard>
 
-        <ModuleCard icon="🛠️" title="/Work" description="Cooldowns, payouts, and job pool access." status={guild.work.enabled ? 'Active' : 'Disabled'}>
+        <ModuleCard icon="🛠️" title="Work Command" description="Cooldowns, payouts, and job pool access." status={guild.work.enabled ? 'Enabled' : 'Disabled'}>
           <ToggleSwitch
-            label="Enable /work"
+            label="Enable Work Command"
             checked={guild.work.enabled}
             onChange={(value) => updateGuild((prev) => ({ ...prev, work: { ...prev.work, enabled: value } }))}
           />

@@ -21,6 +21,17 @@ const ensureRecordShape = (record) => {
       ...(record?.settings?.[section] ?? {}),
     };
   });
+  if (safeSettings.guild?.raffles) {
+    const storedActive = record?.settings?.guild?.raffles?.active;
+    const sanitizedActive = Array.isArray(storedActive)
+      ? storedActive.filter((raffle) => {
+          const label = typeof raffle?.name === 'string' ? raffle.name.toLowerCase() : '';
+          return label && !label.includes('sigma') && !label.includes('rawr');
+        })
+      : null;
+    safeSettings.guild.raffles.active =
+      sanitizedActive && sanitizedActive.length ? sanitizedActive : defaults.guild.raffles.active;
+  }
   const safeLastSaved = {
     ...createLastSavedMap(),
     ...(record?.lastSaved ?? {}),

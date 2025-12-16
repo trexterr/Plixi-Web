@@ -4,6 +4,7 @@ import SectionHeader from '../../components/SectionHeader';
 import ToggleSwitch from '../../components/ToggleSwitch';
 import ModuleCard from '../../components/ModuleCard';
 import NumberInput from '../../components/NumberInput';
+import SliderInput from '../../components/SliderInput';
 import useGuildSettings from '../../hooks/useGuildSettings';
 import { useToast } from '../../components/ToastProvider';
 
@@ -172,6 +173,14 @@ export default function GuildBoxesPage() {
 
   const selectedBox = boxesDraft.collection.find((box) => box.id === selectedBoxId) ?? null;
   const editingBox = editingBoxId ? boxesDraft.collection.find((box) => box.id === editingBoxId) ?? null : null;
+  const animationSpeedIndex = Math.max(
+    0,
+    ANIMATION_SPEEDS.findIndex((option) => option.key === boxesDraft.behavior.animationSpeed),
+  );
+  const animationSpeedLabel = ANIMATION_SPEEDS[animationSpeedIndex]?.label ?? ANIMATION_SPEEDS[1].label;
+  const sliderValueToIndex = (sliderValue) =>
+    Math.min(Math.max(Math.round(sliderValue) - 1, 0), ANIMATION_SPEEDS.length - 1);
+  const sliderValueToLabel = (sliderValue) => ANIMATION_SPEEDS[sliderValueToIndex(sliderValue)]?.label ?? '';
 
   const boxIssues = useMemo(() => {
     const issues = {};
@@ -487,7 +496,7 @@ export default function GuildBoxesPage() {
         <ModuleCard
           icon="⚙️"
           title="General"
-          description="Enable boxes, control animation, and global logging."
+          description="Enable boxes and control animation behavior."
           status={boxesDraft.enabled ? 'Active' : 'Disabled'}
         >
           <ToggleSwitch
@@ -495,16 +504,17 @@ export default function GuildBoxesPage() {
             checked={boxesDraft.enabled}
             onChange={(value) => setBoxesDraft((prev) => ({ ...prev, enabled: value }))}
           />
-          <label className="text-control">
-            <span>Animation speed</span>
-            <select value={boxesDraft.behavior.animationSpeed} onChange={(event) => updateBehavior({ animationSpeed: event.target.value })}>
-              {ANIMATION_SPEEDS.map((option) => (
-                <option key={option.key} value={option.key}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <SliderInput
+            label="Animation Speed"
+            min={1}
+            max={ANIMATION_SPEEDS.length}
+            value={animationSpeedIndex + 1}
+            onChange={(value) => {
+              const nextIndex = sliderValueToIndex(value);
+              updateBehavior({ animationSpeed: ANIMATION_SPEEDS[nextIndex].key });
+            }}
+            valueFormatter={sliderValueToLabel}
+          />
           <ToggleSwitch
             label="Announce Rare Openings"
             checked={boxesDraft.behavior.announceRare}
@@ -516,11 +526,6 @@ export default function GuildBoxesPage() {
               <input value={boxesDraft.behavior.announceChannel} onChange={(event) => updateBehavior({ announceChannel: event.target.value })} />
             </label>
           )}
-          <ToggleSwitch
-            label="Log Every Opening"
-            checked={boxesDraft.behavior.logOpenings}
-            onChange={(value) => updateBehavior({ logOpenings: value })}
-          />
           <ToggleSwitch
             label="Open Boxes On Purchase"
             description={

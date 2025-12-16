@@ -7,6 +7,8 @@ export default function Sidebar() {
   const { guilds, selectedGuild, selectedGuildId, selectGuild } = useSelectedGuild();
   const [selectorOpen, setSelectorOpen] = useState(false);
   const selectorRef = useRef(null);
+  const inviteUrl =
+    'https://discord.com/oauth2/authorize?client_id=1371993653060436029&permissions=8&integration_type=0&scope=bot+applications.commands';
 
   useEffect(() => {
     const handleClick = (event) => {
@@ -54,6 +56,18 @@ export default function Sidebar() {
                 </button>
               </li>
             ))}
+            <li className="guild-selector__add">
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    window.open(inviteUrl, '_blank', 'noopener,noreferrer');
+                  }
+                }}
+              >
+                + Add another server
+              </button>
+            </li>
           </ul>
         )}
       </div>
@@ -78,10 +92,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
-        <button type="button" className="ghost-btn">
-          + Add another server
-        </button>
-        <p>Need help? Our concierge team replies in under 5 minutes.</p>
+        <p>Need help? Join the support server and open a ticket.</p>
       </div>
     </aside>
   );

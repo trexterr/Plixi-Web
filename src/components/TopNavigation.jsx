@@ -19,24 +19,32 @@ export default function TopNavigation() {
 
       <nav className="top-nav-links">
         {TOP_NAV_LINKS.map((link) => (
-          <NavLink
-            key={link.label}
-            to={link.to}
-            end={Boolean(link.end)}
-            className={({ isActive }) => (isActive ? 'active' : '')}
-          >
-            {link.label}
-          </NavLink>
+          link.external ? (
+            <a key={link.label} href={link.href} target="_blank" rel="noreferrer">
+              {link.label}
+            </a>
+          ) : (
+            <NavLink
+              key={link.label}
+              to={link.to}
+              end={Boolean(link.end)}
+              className={({ isActive }) => (isActive ? 'active' : '')}
+            >
+              {link.label}
+            </NavLink>
+          )
         ))}
       </nav>
 
       <div className="top-nav-actions">
-        <button type="button" className="icon-btn" aria-label="View notifications">
-          🔔
-        </button>
-        <button type="button" className="icon-btn" aria-label="Search">
-          ⌕
-        </button>
+        <a
+          href="https://discord.com/oauth2/authorize?client_id=1371993653060436029&permissions=8&integration_type=0&scope=bot+applications.commands"
+          className="outline-btn"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Invite
+        </a>
         <Link to="/pricing" className="primary-btn">
           Premium
         </Link>

@@ -1,7 +1,12 @@
+const formatCurrency = (amount) => amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 export default function PricingCard({ plan, billing, emphasized }) {
   const price = billing === 'yearly' ? plan.yearly : plan.monthly;
   const afterPrice = billing === 'yearly' ? plan.yearlyAfter : plan.monthlyAfter;
-  const subtext = `$${price} first month · $${afterPrice} after`;
+  const subtext =
+    billing === 'yearly'
+      ? `$${formatCurrency(price * 12)} first year · $${formatCurrency(afterPrice * 12)} after`
+      : `$${price} first month · $${afterPrice} after`;
 
   return (
     <article className={`pricing-card ${emphasized ? 'is-featured' : ''}`}>

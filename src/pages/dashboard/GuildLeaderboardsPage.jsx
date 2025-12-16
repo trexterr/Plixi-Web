@@ -1,7 +1,6 @@
 import SectionHeader from '../../components/SectionHeader';
-import SettingCard from '../../components/SettingCard';
 import ToggleSwitch from '../../components/ToggleSwitch';
-import TierSection from '../../components/TierSection';
+import ModuleCard from '../../components/ModuleCard';
 import useGuildSettings from '../../hooks/useGuildSettings';
 
 const CADENCES = ['daily', 'weekly', 'monthly', 'yearly', 'seasonal'];
@@ -40,8 +39,13 @@ export default function GuildLeaderboardsPage() {
         meta={<span className="status-pill">Leaderboards</span>}
       />
 
-      <TierSection title="Core leaderboards" description="Currency, items, and cadence toggles.">
-        <SettingCard title="Leaderboards" description="Currency, items, and cadence toggles.">
+      <div className="card-grid">
+        <ModuleCard
+          icon="🏆"
+          title="Leaderboards"
+          description="Currency, items, and cadence toggles."
+          status={guild.leaderboards.enabled ? 'Active' : 'Disabled'}
+        >
           <ToggleSwitch
             label="Enable leaderboards"
             checked={guild.leaderboards.enabled}
@@ -75,11 +79,14 @@ export default function GuildLeaderboardsPage() {
               </label>
             ))}
           </div>
-        </SettingCard>
-      </TierSection>
+        </ModuleCard>
 
-      <TierSection title="Permissions & roles" description="Who can run what, plus block lists." tier="advanced">
-        <SettingCard title="Permissions & roles" description="Who can run what, plus block lists.">
+        <ModuleCard
+          icon="🛡️"
+          title="Permissions & roles"
+          description="Who can run what, plus block lists."
+          status="Active"
+        >
           <label className="text-control">
             <span>Admin roles</span>
             <textarea
@@ -105,8 +112,8 @@ export default function GuildLeaderboardsPage() {
               onChange={(event) => updatePermissions('commandRestrictions', event.target.value)}
             />
           </label>
-        </SettingCard>
-      </TierSection>
+        </ModuleCard>
+      </div>
 
       <div className="page-actions">
         <div>

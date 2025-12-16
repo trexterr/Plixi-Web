@@ -252,9 +252,7 @@ export default function GuildRafflesPage() {
                       <strong>{raffle.name}</strong>
                       <p>{raffle.ticketsSold ?? 0} tickets sold</p>
                     </div>
-                    <span className="raffle-summary__timer">
-                      {raffle.closesIn ? `Closes in ${raffle.closesIn}` : 'No timer'}
-                    </span>
+                    <span className="raffle-summary__timer">{raffle.closesIn ?? 'No timer'}</span>
                   </div>
                   <div className="raffle-summary__actions">
                     <button type="button" className="ghost-btn ghost-btn--xs" onClick={() => setSelectedRaffleId(raffle.id)}>

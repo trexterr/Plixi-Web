@@ -3,7 +3,29 @@ import { FEATURE_MODULES } from '../data';
 import CommandMatrix from '../components/CommandMatrix';
 
 export default function MarketingHomePage() {
-  const highlightedModules = FEATURE_MODULES.slice(0, 6);
+  const highlightedModules = FEATURE_MODULES.slice(0, 7);
+
+  const scrollToFeatures = () => {
+    const target = document.getElementById('features');
+    if (!target) return;
+
+    const startY = window.scrollY;
+    const targetY = target.getBoundingClientRect().top + window.scrollY - 40;
+    const duration = 1100;
+    const startTime = performance.now();
+
+    const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+    const step = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeInOutCubic(progress);
+      window.scrollTo(0, startY + (targetY - startY) * eased);
+      if (progress < 1) requestAnimationFrame(step);
+    };
+
+    requestAnimationFrame(step);
+  };
 
   return (
     <div className="marketing-page">
@@ -20,14 +42,13 @@ export default function MarketingHomePage() {
             <Link to="/app" className="primary-btn">
               Add to Discord
             </Link>
-            <a href="#features" className="ghost-btn">
+            <button type="button" className="ghost-btn" onClick={scrollToFeatures}>
               See features
-            </a>
+            </button>
           </div>
           <ul className="hero-highlights">
             <li>
-              <strong>3.2M+</strong>
-              <span>economy payouts/day</span>
+              <strong>Used by 3.2+ million servers</strong>
             </li>
             <li>
               <strong>100% client-side</strong>
@@ -55,8 +76,8 @@ export default function MarketingHomePage() {
                 <h3>{module.title}</h3>
                 <p>{module.description}</p>
               </div>
-              <Link to="/app" className="ghost-btn">
-                Configure
+              <Link to="/app" className="link-btn">
+                Learn more →
               </Link>
             </article>
           ))}

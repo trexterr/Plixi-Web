@@ -4,7 +4,7 @@ export default function CommandMatrix() {
   return (
     <section className="command-matrix" id="commands">
       <header>
-        <p className="eyebrow">Command coverage</p>
+        <p className="eyebrow">Commands</p>
         <h2>Every feature comes with production-ready slash commands.</h2>
         <p>Plixi mirrors your bot surface so what you configure here lines up with the commands your members already use.</p>
       </header>

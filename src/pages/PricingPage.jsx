@@ -10,7 +10,7 @@ export default function PricingPage() {
       <header className="pricing-hero">
         <p className="eyebrow">Plixi Premium</p>
         <h1>Choose a plan that scales with your Discord empire.</h1>
-        <p>Monthly or yearly billing, no contracts. Switch plans anytime.</p>
+        <p>Monthly or yearly billing. Switch plans anytime.</p>
         <div className="billing-toggle">
           <button className={billing === 'monthly' ? 'active' : ''} onClick={() => setBilling('monthly')} type="button">
             Pay Monthly
