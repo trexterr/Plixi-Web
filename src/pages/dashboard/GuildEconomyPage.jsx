@@ -145,6 +145,7 @@ export default function GuildEconomyPage() {
           <button type="button" className="ghost-btn" onClick={() => setEditingRoles(false)}>
             ← Back to daily rewards
           </button>
+          <span className="status-pill">{roleCount} roles configured</span>
         </div>
 
         <div className="job-editor job-editor--roles">
@@ -154,7 +155,6 @@ export default function GuildEconomyPage() {
               <button type="button" className="ghost-btn ghost-btn--xs" onClick={addRoleAmount}>
                 + Add role
               </button>
-              <span className="status-pill">{roleCount} roles configured</span>
             </div>
           </div>
           <div className="job-editor__body">
@@ -218,16 +218,21 @@ export default function GuildEconomyPage() {
           </div>
           <div className="job-editor__body">
             {availableJobs ? (
-              <ul className="job-list">
+              <div className="job-chip-grid">
                 {guild.work.jobs.map((job) => (
-                  <li key={job.id}>
-                    <input value={job.name} onChange={(event) => updateJob(job.id, event.target.value)} />
-                    <button type="button" onClick={() => removeJob(job.id)}>
+                  <div className="job-chip" key={job.id}>
+                    <input
+                      value={job.name}
+                      onChange={(event) => updateJob(job.id, event.target.value)}
+                      className="job-chip__input"
+                      size={Math.max(4, job.name.length)}
+                    />
+                    <button type="button" className="job-chip__remove" onClick={() => removeJob(job.id)}>
                       ✕
                     </button>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             ) : (
               <p className="helper-text">No jobs configured. Add a few to get started.</p>
             )}
