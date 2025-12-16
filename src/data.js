@@ -550,10 +550,31 @@ export const DEFAULT_SETTINGS = {
     serverShop: {
       name: 'Orbital Exchange',
       description: 'Rotating curated shop for prestige items.',
-      items: [
-        { id: 'shop-item-1', name: 'Nebula Blade', price: 1200, featured: true },
-        { id: 'shop-item-2', name: 'Prism Core', price: 640, featured: false },
+      itemMode: 'randomized',
+      randomizedPool: [
+        { id: 'pool-item-1', name: 'Nebula Blade', price: 1200, weight: 5, stock: 10 },
+        { id: 'pool-item-2', name: 'Prism Core', price: 640, weight: 3, stock: null },
+        { id: 'pool-item-3', name: 'Ion Nova Shard', price: 980, weight: 2, stock: 4 },
       ],
+      schedule: [
+        {
+          id: 'schedule-day-1',
+          date: '2024-07-15',
+          slots: [
+            { id: 'slot-1', label: 'Slot 1', itemName: 'Nebula Blade', price: 1200, stock: 5, featured: true },
+            { id: 'slot-2', label: 'Slot 2', itemName: 'Prism Core', price: 600, stock: 12, featured: false },
+          ],
+        },
+        {
+          id: 'schedule-day-2',
+          date: '2024-07-16',
+          slots: [
+            { id: 'slot-3', label: 'Slot 1', itemName: 'Ion Nova Shard', price: 980, stock: 8, featured: true },
+            { id: 'slot-4', label: 'Slot 2', itemName: 'Cobalt Feather', price: 450, stock: 20, featured: false },
+          ],
+        },
+      ],
+      accentColor: '#0ea5e9',
       tomorrowVisibility: false,
       randomRotation: false,
       featuredHeroEnabled: false,
