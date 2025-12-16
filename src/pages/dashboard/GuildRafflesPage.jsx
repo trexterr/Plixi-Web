@@ -74,6 +74,16 @@ export default function GuildRafflesPage() {
               ],
             },
           ];
+  const activeLimit = guild.raffles.activeLimit ?? Infinity;
+  const remainingSlots = Math.max(activeLimit - activeRaffles.length, 0);
+  const slotLabel =
+    remainingSlots === Infinity
+      ? '∞ slots open'
+      : `${remainingSlots} ${remainingSlots === 1 ? 'slot' : 'slots'} open`;
+  const durationInvalid =
+    !Number.isFinite(newRaffle.durationValue) ||
+    !Number.isInteger(newRaffle.durationValue) ||
+    newRaffle.durationValue < 1;
   const selectedRaffle = activeRaffles.find((raffle) => raffle.id === selectedRaffleId) ?? null;
   const selectedRaffleTopBuyers = selectedRaffle
     ? Array.isArray(selectedRaffle.topBuyers)
@@ -84,7 +94,7 @@ export default function GuildRafflesPage() {
     : [];
   const prizeQuantity = selectedRaffle?.prizeQuantity ?? guild.raffles.prizeQuantity ?? 1;
   const prevLocationKeyRef = useRef(location.key);
-  const createRaffleDisabled = !rafflesEnabled || activeRaffles.length >= (guild.raffles.activeLimit ?? Infinity);
+  const createRaffleDisabled = !rafflesEnabled || remainingSlots <= 0;
   const canCreateRaffle =
     rafflesEnabled && newRaffle.name.trim().length > 0 && newRaffle.prizeName.trim().length > 0;
 
@@ -106,7 +116,7 @@ export default function GuildRafflesPage() {
   }, [guild.raffles.ticketPrice, guild.raffles.prizeQuantity, guild.raffles.durationDays]);
 
   const handleCreateRaffle = () => {
-    if (!canCreateRaffle) return;
+    if (!canCreateRaffle || durationInvalid) return;
     const next = {
       id: `raffle-${Date.now()}`,
       name: newRaffle.name.trim(),
@@ -219,20 +229,6 @@ export default function GuildRafflesPage() {
             checked={guild.raffles.enabled}
             onChange={(value) => updateGuild((prev) => ({ ...prev, raffles: { ...prev.raffles, enabled: value } }))}
           />
-          <ToggleSwitch
-            label="Raffle history logs"
-            checked={guild.raffles.logHistory}
-            onChange={(value) => updateGuild((prev) => ({ ...prev, raffles: { ...prev.raffles, logHistory: value } }))}
-          />
-          {guild.raffles.logHistory && (
-            <label className="text-control">
-              <span>History channel</span>
-              <input
-                value={guild.raffles.logChannel}
-                onChange={(event) => updateGuild((prev) => ({ ...prev, raffles: { ...prev.raffles, logChannel: event.target.value } }))}
-              />
-            </label>
-          )}
         </ModuleCard>
 
         <ModuleCard
@@ -241,7 +237,7 @@ export default function GuildRafflesPage() {
           description="Live events members can join right now."
           status={
             rafflesEnabled
-              ? `${activeRaffles.length}/${guild.raffles.activeLimit ?? '∞'} live`
+              ? `${activeRaffles.length}/${activeLimit === Infinity ? '∞' : activeLimit} live`
               : 'Disabled'
           }
         >
@@ -251,11 +247,15 @@ export default function GuildRafflesPage() {
             <ul className="raffle-summary">
               {activeRaffles.map((raffle) => (
                 <li key={raffle.id}>
-                  <div>
-                    <strong>{raffle.name}</strong>
-                    <span>{raffle.closesIn ? `Closes in ${raffle.closesIn}` : 'No timer'}</span>
+                  <div className="raffle-summary__header">
+                    <div className="raffle-summary__title">
+                      <strong>{raffle.name}</strong>
+                      <p>{raffle.ticketsSold ?? 0} tickets sold</p>
+                    </div>
+                    <span className="raffle-summary__timer">
+                      {raffle.closesIn ? `Closes in ${raffle.closesIn}` : 'No timer'}
+                    </span>
                   </div>
-                  <p>{raffle.ticketsSold ?? 0} tickets sold</p>
                   <div className="raffle-summary__actions">
                     <button type="button" className="ghost-btn ghost-btn--xs" onClick={() => setSelectedRaffleId(raffle.id)}>
                       View stats
@@ -275,11 +275,7 @@ export default function GuildRafflesPage() {
           description="Spin up a new event with preset pricing."
           status={
             rafflesEnabled
-              ? (() => {
-                  const remaining = Math.max((guild.raffles.activeLimit ?? 3) - activeRaffles.length, 0);
-                  const noun = remaining === 1 ? 'slot' : 'slots';
-                  return `${remaining} ${noun} open`;
-                })()
+              ? slotLabel
               : 'Disabled'
           }
         >
@@ -319,11 +315,12 @@ export default function GuildRafflesPage() {
               disabled={createRaffleDisabled}
             />
           </label>
-          <label className="text-control">
+          <label className={`text-control ${durationInvalid ? 'has-error' : ''}`}>
             <span>Duration</span>
             <div className="duration-input">
               <NumberInput
                 min={1}
+                step={1}
                 value={newRaffle.durationValue}
                 onChange={(value) => setNewRaffle((prev) => ({ ...prev, durationValue: value }))}
                 disabled={createRaffleDisabled}
@@ -338,19 +335,20 @@ export default function GuildRafflesPage() {
                 <option value="days">Days</option>
               </select>
             </div>
+            {durationInvalid && <p className="error-text">Duration must be a whole number.</p>}
           </label>
           <div className="module-card__actions">
             <button
               type="button"
               className="primary-btn"
-              disabled={!canCreateRaffle || activeRaffles.length >= (guild.raffles.activeLimit ?? Infinity)}
+              disabled={createRaffleDisabled || !canCreateRaffle || durationInvalid}
               onClick={handleCreateRaffle}
             >
               Create raffle
             </button>
           </div>
           {!rafflesEnabled && <p className="helper-text">Enable raffles to create a new event.</p>}
-          {rafflesEnabled && activeRaffles.length >= (guild.raffles.activeLimit ?? Infinity) && (
+          {rafflesEnabled && remainingSlots <= 0 && (
             <p className="helper-text">You're at capacity. Remove a raffle to free a slot.</p>
           )}
         </ModuleCard>

@@ -537,26 +537,8 @@
   position: relative;
 }
 
-.raffle-summary li div {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
 .raffle-summary li strong {
   font-size: 0.95rem;
-}
-
-.raffle-summary li span {
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-
-.raffle-summary li p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.85rem;
 }
 
 .raffle-summary__actions {
@@ -566,6 +548,32 @@
   position: absolute;
   bottom: 0.95rem;
   right: 0.75rem;
+}
+
+.raffle-summary__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.raffle-summary__title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.raffle-summary__title p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+}
+
+.raffle-summary__timer {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
 }
 
 .raffle-detail {
@@ -1922,6 +1930,16 @@
 
 .toggle-switch input:checked + .track .thumb {
   transform: translateX(20px);
+}
+
+.toggle-switch--premium input:checked + .track {
+  background: linear-gradient(125deg, #c084fc, #7c3aed);
+  box-shadow: 0 8px 18px rgba(124, 58, 237, 0.35);
+}
+
+.toggle-switch--premium input:checked + .track .thumb {
+  transform: translateX(20px);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.18);
 }
 
 .toggle-switch small {
