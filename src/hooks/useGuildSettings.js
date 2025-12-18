@@ -16,9 +16,14 @@ export default function useGuildSettings() {
     updateSection('guild', next);
   };
 
-  const saveGuild = (message = 'Guild settings saved') => {
-    saveSection('guild');
-    showToast(message);
+  const saveGuild = async (message = 'Guild settings saved') => {
+    try {
+      await saveSection('guild');
+      showToast(message);
+    } catch (error) {
+      console.error('Failed to save guild settings', error);
+      showToast('Failed to save guild settings', 'error');
+    }
   };
 
   const resetGuild = (message = 'Guild settings reset', tone = 'info') => {

@@ -36,12 +36,6 @@ import ToastProvider from './components/ToastProvider';
 import TopNavigation from './components/TopNavigation';
 import { supabase } from './lib/supabase';
 
-const { data, error } = await supabase
-  .from('users')
-  .select('*')
-
-console.log(data, error)
-
 const mapDiscordUser = (sessionUser) => {
   if (!sessionUser) return null;
   const metadata = sessionUser.user_metadata ?? {};
@@ -99,6 +93,69 @@ function App() {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (!sessionUser) return;
+
+    const ensureUserRecord = async () => {
+      const metadata = sessionUser.metadata ?? {};
+
+      try {
+        const { data: existingUser, error: lookupError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('id', sessionUser.id)
+          .maybeSingle();
+
+        if (lookupError) {
+          console.error('Failed checking user record', lookupError);
+          return;
+        }
+
+        if (existingUser) return;
+
+        const rawDiscordId =
+          metadata.provider_id ||
+          metadata.user_id ||
+          metadata.sub ||
+          null;
+
+        const discordIdNumber = rawDiscordId ? Number(rawDiscordId) : null;
+        const normalizedDiscordId =
+          discordIdNumber !== null && Number.isFinite(discordIdNumber)
+            ? discordIdNumber
+            : null;
+
+        const username =
+          metadata.full_name ||
+          metadata.user_name ||
+          metadata.name ||
+          sessionUser.displayName ||
+          'Discord User';
+
+        const avatarUrl =
+          metadata.avatar_url ||
+          metadata.picture ||
+          sessionUser.avatar ||
+          null;
+
+        const { error: insertError } = await supabase.from('users').insert({
+          id: sessionUser.id,
+          discord_id: normalizedDiscordId,
+          username,
+          avatar_url: avatarUrl,
+        });
+
+        if (insertError) {
+          console.error('Failed inserting user record', insertError);
+        }
+      } catch (error) {
+        console.error('Unexpected error ensuring user record', error);
+      }
+    };
+
+    ensureUserRecord();
+  }, [sessionUser]);
 
   return (
     <BrowserRouter>

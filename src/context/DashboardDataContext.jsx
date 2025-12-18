@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useMemo, useReducer } from 'react';
+import { createContext, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { DEFAULT_SETTINGS } from '../data';
 import { useSelectedGuild } from './SelectedGuildContext';
+import { fetchGuildSettingsFromSupabase, persistGuildSettingsToSupabase } from '../lib/guildSettingsApi';
 
 const DashboardDataContext = createContext(null);
 const STORAGE_KEY = 'plixi-dashboard-data-v1';
@@ -49,6 +50,33 @@ const reducer = (state, action) => {
         nextRecords[guildId] = ensureRecordShape(nextRecords[guildId]);
       });
       return { ...state, records: nextRecords };
+    }
+    case 'HYDRATE_GUILD': {
+      const { guildId, data } = action;
+      const guildRecord = state.records[guildId];
+      if (!guildRecord || !data) return state;
+      const currentGuild = guildRecord.settings.guild;
+      const nextGuild = { ...currentGuild };
+      Object.entries(data).forEach(([key, value]) => {
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+          nextGuild[key] = { ...currentGuild[key], ...value };
+        } else {
+          nextGuild[key] = value;
+        }
+      });
+      return {
+        ...state,
+        records: {
+          ...state.records,
+          [guildId]: {
+            ...guildRecord,
+            settings: {
+              ...guildRecord.settings,
+              guild: nextGuild,
+            },
+          },
+        },
+      };
     }
     case 'UPDATE_SECTION': {
       const { guildId, section, updates } = action;
@@ -120,6 +148,8 @@ const reducer = (state, action) => {
 export function DashboardDataProvider({ children }) {
   const { guilds, selectedGuildId } = useSelectedGuild();
 
+  const hydratedGuildsRef = useRef(new Set());
+
   const [state, dispatch] = useReducer(
     reducer,
     guilds,
@@ -159,6 +189,24 @@ export function DashboardDataProvider({ children }) {
   }, [guilds]);
 
   useEffect(() => {
+    guilds.forEach((guild) => {
+      if (!guild?.id) return;
+      if (hydratedGuildsRef.current.has(guild.id)) return;
+      hydratedGuildsRef.current.add(guild.id);
+      (async () => {
+        try {
+          const remoteData = await fetchGuildSettingsFromSupabase(guild.id);
+          if (remoteData) {
+            dispatch({ type: 'HYDRATE_GUILD', guildId: guild.id, data: remoteData });
+          }
+        } catch (error) {
+          console.error('Failed to hydrate guild settings', error);
+        }
+      })();
+    });
+  }, [guilds]);
+
+  useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
@@ -175,8 +223,12 @@ export function DashboardDataProvider({ children }) {
     dispatch({ type: 'RESET_SECTION', guildId: activeGuildId, section });
   };
 
-  const saveSection = (section) => {
+  const saveSection = async (section) => {
     if (!activeGuildId) return;
+    if (section === 'guild') {
+      const guildSettings = state.records[activeGuildId]?.settings?.guild;
+      await persistGuildSettingsToSupabase(activeGuildId, guildSettings);
+    }
     dispatch({ type: 'SAVE_SECTION', guildId: activeGuildId, section, timestamp: new Date().toISOString() });
   };
 
