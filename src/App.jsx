@@ -75,7 +75,7 @@ function App() {
         if (!isMounted) return;
         setSessionUser(mapDiscordUser(data?.session?.user ?? null));
       } catch (error) {
-        console.error('Failed to load Supabase session', error);
+        console.error('Failed to fetch Supabase session', error);
       }
     };
 
