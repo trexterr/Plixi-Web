@@ -36,6 +36,12 @@ import ToastProvider from './components/ToastProvider';
 import TopNavigation from './components/TopNavigation';
 import { supabase } from './lib/supabase';
 
+const { data, error } = await supabase
+  .from('users')
+  .select('*')
+
+console.log(data, error)
+
 const mapDiscordUser = (sessionUser) => {
   if (!sessionUser) return null;
   const metadata = sessionUser.user_metadata ?? {};
