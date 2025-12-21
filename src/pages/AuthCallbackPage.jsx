@@ -19,7 +19,7 @@ export default function AuthCallbackPage() {
         }
       } finally {
         if (isMounted) {
-          navigate('/app', { replace: true });
+          navigate('/servers', { replace: true });
         }
       }
     };

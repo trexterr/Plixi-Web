@@ -18,6 +18,7 @@ import DocsPage from './pages/DocsPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
 import JobsPage from './pages/dashboard/JobsPage';
 import XPPage from './pages/dashboard/XPPage';
+import ServerPickerPage from './pages/ServerPickerPage';
 import GuildEconomyPage from './pages/dashboard/GuildEconomyPage';
 import GuildItemsPage from './pages/dashboard/GuildItemsPage';
 import GuildBoxesPage from './pages/dashboard/GuildBoxesPage';
@@ -268,6 +269,7 @@ function App() {
                 <Route path="/docs" element={<DocsPage />} />
                 <Route path="/docs/:sectionSlug" element={<DocsPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/servers" element={<ServerPickerPage />} />
                 <Route path="/auth" element={<AuthCallbackPage />} />
                 <Route path="/app" element={<DashboardShell />}>
                   <Route index element={<DashboardHomePage />} />

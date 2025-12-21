@@ -18,6 +18,8 @@ export default function Sidebar() {
     return icon ?? '🛰️';
   };
 
+  const hasGuilds = guilds.length > 0;
+
   useEffect(() => {
     const handleClick = (event) => {
       if (!selectorRef.current) return;
@@ -32,19 +34,32 @@ export default function Sidebar() {
   return (
     <aside className="dashboard-sidebar">
       <div className="guild-selector" ref={selectorRef}>
-        <button type="button" onClick={() => setSelectorOpen((prev) => !prev)}>
+        <button
+          type="button"
+          onClick={() => {
+            if (hasGuilds) {
+              setSelectorOpen((prev) => !prev);
+            } else {
+              window.open(inviteUrl, '_blank', 'noopener,noreferrer');
+            }
+          }}
+        >
           <div className="guild-avatar" aria-hidden="true">
             {renderGuildIcon(selectedGuild)}
           </div>
           <div className={`active-guild-copy ${selectedGuild?.premium ? 'has-pill' : ''}`}>
-            <span className="guild-name-line">{selectedGuild?.name ?? 'Select a server'}</span>
-            {selectedGuild?.premium && <span className="pill">Premium</span>}
+            <span className="guild-name-line">
+              {selectedGuild?.name ?? (hasGuilds ? 'Select a server' : '+ Invite to server')}
+            </span>
+            {selectedGuild?.premium && hasGuilds && <span className="pill">Premium</span>}
           </div>
-          <span className={`chevron ${selectorOpen ? 'open' : ''}`} aria-hidden="true">
-            ▾
-          </span>
+          {hasGuilds && (
+            <span className={`chevron ${selectorOpen ? 'open' : ''}`} aria-hidden="true">
+              ▾
+            </span>
+          )}
         </button>
-        {selectorOpen && guilds.length > 0 && (
+        {selectorOpen && hasGuilds && (
           <ul>
             {guilds.map((guild) => (
               <li key={guild.id}>
