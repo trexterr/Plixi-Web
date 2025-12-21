@@ -100,6 +100,7 @@ const normalizeDiscordGuild = (guild) => {
 function App() {
   const [guilds, setGuilds] = useState([]);
   const [sessionUser, setSessionUser] = useState(null);
+  const [guildDebug, setGuildDebug] = useState('Not started');
 
   useEffect(() => {
     document.title = 'Plixi - Control center';
@@ -137,7 +138,10 @@ function App() {
     let isMounted = true;
 
     const fetchGuilds = async () => {
-      if (!sessionUser) return setGuilds([]);
+      if (!sessionUser) {
+        setGuildDebug('No session user yet');
+        return setGuilds([]);
+      }
 
       try {
         const { data: userData } = await supabase.auth.getUser();
@@ -160,21 +164,26 @@ function App() {
         }
 
         if (!discordId) {
-          console.debug('Guild fetch — no discordId resolved');
+          setGuildDebug('No Discord ID resolved from session/metadata/profile');
           setGuilds([]);
           return;
         }
 
-        console.debug('Guild fetch — Supabase user', {
+        const userIdFilter = String(discordId);
+
+        const debugUser = {
           supabaseId: userData?.user?.id,
           discordId,
-          userMetadata: userData?.user?.user_metadata,
+          metadata: userData?.user?.user_metadata,
           identities: userData?.user?.identities,
-        });
+        };
+        console.debug('Guild fetch — Supabase user', debugUser);
+        setGuildDebug(`Using Discord ID ${discordId} (Supabase ID ${debugUser.supabaseId})`);
 
         const { data: memberships, error: membershipError } = await supabase
           .from('user_guilds')
-          .eq('user_id', discordId)
+          .select('id, guild_id')
+          .eq('user_id', userIdFilter)
           .eq('can_manage', true);
 
         if (membershipError) throw membershipError;
@@ -186,11 +195,13 @@ function App() {
           : [];
 
         if (!guildIds.length) {
+          setGuildDebug(`No user_guilds rows for Discord ID ${discordId}`);
           setGuilds([]);
           return;
         }
 
         console.debug('Guild fetch — memberships', memberships);
+        setGuildDebug(`Found ${guildIds.length} membership(s) for Discord ID ${discordId}`);
 
         const { data: guildRows, error: guildError } = await supabase
           .from('guilds')
@@ -200,6 +211,7 @@ function App() {
         if (guildError) throw guildError;
 
         console.debug('Guild fetch — guild rows', guildRows);
+        setGuildDebug(`Loaded ${guildRows?.length ?? 0} guild rows`);
 
         const normalized = Array.isArray(guildRows)
           ? guildRows
@@ -219,6 +231,7 @@ function App() {
         setGuilds(normalized);
       } catch (error) {
         console.error('Failed to fetch guilds for user', error);
+        setGuildDebug(`Failed fetching guilds: ${error?.message ?? 'Unknown error'}`);
         if (isMounted) setGuilds([]);
       }
     };
@@ -305,7 +318,7 @@ function App() {
                 <Route path="/docs" element={<DocsPage />} />
                 <Route path="/docs/:sectionSlug" element={<DocsPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
-                <Route path="/servers" element={<ServerPickerPage />} />
+                <Route path="/servers" element={<ServerPickerPage debugInfo={guildDebug} />} />
                 <Route path="/auth" element={<AuthCallbackPage />} />
                 <Route path="/app" element={<DashboardShell />}>
                   <Route index element={<DashboardHomePage />} />

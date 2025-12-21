@@ -18,7 +18,7 @@ const renderGuildIcon = (guild) => {
   );
 };
 
-export default function ServerPickerPage() {
+export default function ServerPickerPage({ debugInfo }) {
   const { guilds, selectGuild, selectedGuildId } = useSelectedGuild();
   const navigate = useNavigate();
 
@@ -159,6 +159,11 @@ export default function ServerPickerPage() {
         ) : (
           <div className="server-picker__empty" style={{ textAlign: 'center', marginBottom: 28 }}>
             <p>No servers found for this account. Make sure your Discord user is added with manage access.</p>
+            {debugInfo ? (
+              <p style={{ marginTop: 8, fontSize: 12, opacity: 0.7 }}>
+                Debug: {debugInfo}
+              </p>
+            ) : null}
           </div>
         )}
 
