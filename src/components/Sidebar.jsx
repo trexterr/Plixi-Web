@@ -10,6 +10,14 @@ export default function Sidebar() {
   const inviteUrl =
     'https://discord.com/oauth2/authorize?client_id=1371993653060436029&permissions=8&integration_type=0&scope=bot+applications.commands';
 
+  const renderGuildIcon = (guild) => {
+    const icon = guild?.icon;
+    if (typeof icon === 'string' && icon.startsWith('http')) {
+      return <img src={icon} alt={`${guild?.name ?? 'Guild'} icon`} />;
+    }
+    return icon ?? '🛰️';
+  };
+
   useEffect(() => {
     const handleClick = (event) => {
       if (!selectorRef.current) return;
@@ -26,7 +34,7 @@ export default function Sidebar() {
       <div className="guild-selector" ref={selectorRef}>
         <button type="button" onClick={() => setSelectorOpen((prev) => !prev)}>
           <div className="guild-avatar" aria-hidden="true">
-            {selectedGuild?.icon ?? '🛰️'}
+            {renderGuildIcon(selectedGuild)}
           </div>
           <div className={`active-guild-copy ${selectedGuild?.premium ? 'has-pill' : ''}`}>
             <span className="guild-name-line">{selectedGuild?.name ?? 'Select a server'}</span>
@@ -49,7 +57,7 @@ export default function Sidebar() {
                   }}
                 >
                   <span className="guild-avatar" aria-hidden="true">
-                    {guild.icon}
+                    {renderGuildIcon(guild)}
                   </span>
                   <span className="guild-name">{guild.name}</span>
                   {guild.premium && <span className="pill">Premium</span>}

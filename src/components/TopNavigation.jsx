@@ -11,14 +11,10 @@ export default function TopNavigation() {
   const avatarButtonRef = useRef(null);
   const dropdownRef = useRef(null);
 
-  const handleDiscordLogin = async () => {
-    try {
-      await supabase.auth.signInWithOAuth({
-        provider: 'discord',
-      });
-    } catch (error) {
-      console.error('Discord login failed', error);
-    }
+  const handleDiscordLogin = () => {
+    // Full redirect to the generated Discord OAuth URL; no rebuilding or proxying
+    window.location.href =
+      'https://discord.com/oauth2/authorize?client_id=1450995414907093138&response_type=code&redirect_uri=https%3A%2F%2Fisbegleeqyrcphttrwoq.supabase.co%2Fauth%2Fv1%2Fcallback&scope=identify+guilds';
   };
 
   const handleSignOut = async () => {

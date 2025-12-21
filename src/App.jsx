@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import { MOCK_GUILDS } from './data';
@@ -58,8 +58,23 @@ const mapDiscordUser = (sessionUser) => {
   };
 };
 
+const normalizeDiscordGuild = (guild) => {
+  if (!guild?.id || !guild?.name) return null;
+  const iconUrl = guild.icon
+    ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64`
+    : '🛰️';
+
+  return {
+    id: guild.id,
+    name: guild.name,
+    icon: iconUrl,
+    memberCount: guild.approximate_member_count ?? null,
+    premium: Boolean(guild.premium_subscription_count),
+  };
+};
+
 function App() {
-  const memoizedGuilds = useMemo(() => MOCK_GUILDS, []);
+  const [guilds, setGuilds] = useState(MOCK_GUILDS);
   const [sessionUser, setSessionUser] = useState(null);
 
   useEffect(() => {
@@ -93,6 +108,55 @@ function App() {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchGuilds = async () => {
+      if (!sessionUser) {
+        setGuilds(MOCK_GUILDS);
+        return;
+      }
+
+      try {
+        const { data } = await supabase.auth.getSession();
+        const accessToken = data?.session?.provider_token;
+        if (!accessToken) {
+          setGuilds(MOCK_GUILDS);
+          return;
+        }
+
+        const response = await fetch('https://discord.com/api/users/@me/guilds', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Discord guild fetch failed with status ${response.status}`);
+        }
+
+        const rawGuilds = await response.json();
+        const normalized = Array.isArray(rawGuilds)
+          ? rawGuilds.map(normalizeDiscordGuild).filter(Boolean)
+          : [];
+
+        if (!isMounted) return;
+        setGuilds(normalized.length ? normalized : MOCK_GUILDS);
+      } catch (error) {
+        console.error('Failed to fetch Discord guilds', error);
+        if (isMounted) {
+          setGuilds(MOCK_GUILDS);
+        }
+      }
+    };
+
+    fetchGuilds();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [sessionUser]);
 
   useEffect(() => {
     if (!sessionUser) return;
@@ -160,7 +224,7 @@ function App() {
   return (
     <BrowserRouter>
       <ToastProvider>
-        <SelectedGuildProvider guilds={memoizedGuilds} user={sessionUser}>
+        <SelectedGuildProvider guilds={guilds} user={sessionUser}>
           <DashboardDataProvider>
             <div className="app-shell">
               <TopNavigation />
