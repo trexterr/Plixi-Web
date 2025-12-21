@@ -169,7 +169,17 @@ function App() {
           return;
         }
 
-        const userIdFilter = String(discordId);
+        const candidateUserIds = Array.from(
+          new Set(
+            [
+              discordId,
+              sessionUser?.id,
+              userData?.user?.id,
+            ]
+              .map((val) => (val === undefined || val === null ? null : String(val)))
+              .filter(Boolean),
+          ),
+        );
 
         const debugUser = {
           supabaseId: userData?.user?.id,
@@ -178,12 +188,12 @@ function App() {
           identities: userData?.user?.identities,
         };
         console.debug('Guild fetch — Supabase user', debugUser);
-        setGuildDebug(`Using Discord ID ${discordId} (Supabase ID ${debugUser.supabaseId})`);
+        setGuildDebug(`Using IDs [${candidateUserIds.join(', ')}] (Supabase ID ${debugUser.supabaseId})`);
 
         const { data: memberships, error: membershipError } = await supabase
           .from('user_guilds')
           .select('id, guild_id')
-          .eq('user_id', userIdFilter)
+          .in('user_id', candidateUserIds)
           .eq('can_manage', true);
 
         if (membershipError) throw membershipError;
