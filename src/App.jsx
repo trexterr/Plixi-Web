@@ -147,11 +147,11 @@ function App() {
         const { data: userData } = await supabase.auth.getUser();
         let discordId = extractDiscordUserId(userData?.user ?? null) || extractDiscordUserId(sessionUser);
 
-        // Fallback: read discord_id from our users table if metadata is missing
+        // Fallback: read discord_id from users_web if metadata is missing
         if (!discordId) {
           try {
             const { data: profile } = await supabase
-              .from('users')
+              .from('users_web')
               .select('discord_id')
               .eq('id', sessionUser.id)
               .maybeSingle();
@@ -249,7 +249,7 @@ function App() {
 
       try {
         const { data: existingUser, error: lookupError } = await supabase
-          .from('users')
+          .from('users_web')
           .select('id')
           .eq('id', sessionUser.id)
           .maybeSingle();
@@ -286,7 +286,7 @@ function App() {
           sessionUser.avatar ||
           null;
 
-        const { error: insertError } = await supabase.from('users').insert({
+        const { error: insertError } = await supabase.from('users_web').insert({
           id: sessionUser.id,
           discord_id: normalizedDiscordId,
           username,
