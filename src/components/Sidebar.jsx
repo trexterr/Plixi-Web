@@ -44,7 +44,7 @@ export default function Sidebar() {
             ▾
           </span>
         </button>
-        {selectorOpen && (
+        {selectorOpen && guilds.length > 0 && (
           <ul>
             {guilds.map((guild) => (
               <li key={guild.id}>

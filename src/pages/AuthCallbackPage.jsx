@@ -9,8 +9,14 @@ export default function AuthCallbackPage() {
     let isMounted = true;
 
     const finalizeLogin = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
       try {
-        await supabase.auth.getSession();
+        if (code) {
+          await supabase.auth.exchangeCodeForSession({ authCode: code });
+        } else {
+          await supabase.auth.getSession();
+        }
       } finally {
         if (isMounted) {
           navigate('/app', { replace: true });

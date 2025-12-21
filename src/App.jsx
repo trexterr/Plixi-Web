@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-
-import { MOCK_GUILDS } from './data';
 import { SelectedGuildProvider } from './context/SelectedGuildContext';
 import { DashboardDataProvider } from './context/DashboardDataContext';
 import DashboardShell from './pages/DashboardShell';
@@ -60,9 +58,11 @@ const mapDiscordUser = (sessionUser) => {
 
 const normalizeDiscordGuild = (guild) => {
   if (!guild?.id || !guild?.name) return null;
-  const iconUrl = guild.icon
-    ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64`
-    : '🛰️';
+  const iconHash = guild.icon_hash || guild.icon;
+  const iconUrl =
+    iconHash && guild.id
+      ? `https://cdn.discordapp.com/icons/${guild.id}/${iconHash}.png?size=64`
+      : '🛰️';
 
   return {
     id: guild.id,
@@ -74,7 +74,7 @@ const normalizeDiscordGuild = (guild) => {
 };
 
 function App() {
-  const [guilds, setGuilds] = useState(MOCK_GUILDS);
+  const [guilds, setGuilds] = useState([]);
   const [sessionUser, setSessionUser] = useState(null);
 
   useEffect(() => {
@@ -113,41 +113,63 @@ function App() {
     let isMounted = true;
 
     const fetchGuilds = async () => {
-      if (!sessionUser) {
-        setGuilds(MOCK_GUILDS);
-        return;
-      }
+      if (!sessionUser) return setGuilds([]);
 
       try {
-        const { data } = await supabase.auth.getSession();
-        const accessToken = data?.session?.provider_token;
-        if (!accessToken) {
-          setGuilds(MOCK_GUILDS);
+        const metadata = sessionUser.metadata ?? {};
+        const userId =
+          metadata.provider_id ||
+          metadata.user_id ||
+          metadata.sub ||
+          sessionUser.id ||
+          null;
+        if (!userId) {
+          setGuilds([]);
           return;
         }
 
-        const response = await fetch('https://discord.com/api/users/@me/guilds', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const { data, error } = await supabase
+          .from('user_guilds')
+          .select(
+            `
+            guild:guild_id (
+              guild_id,
+              name,
+              plan,
+              member_count,
+              owner_id,
+              last_updated,
+              icon_hash
+            )
+          `,
+          )
+          .eq('user_id', userId)
+          .eq('can_manage', true);
 
-        if (!response.ok) {
-          throw new Error(`Discord guild fetch failed with status ${response.status}`);
-        }
+        if (error) throw error;
 
-        const rawGuilds = await response.json();
-        const normalized = Array.isArray(rawGuilds)
-          ? rawGuilds.map(normalizeDiscordGuild).filter(Boolean)
+        const normalized = Array.isArray(data)
+          ? data
+              .map((row) =>
+                row?.guild
+                  ? normalizeDiscordGuild({
+                      id: row.guild.guild_id,
+                      name: row.guild.name,
+                      icon_hash: row.guild.icon_hash,
+                      icon: row.guild.icon_hash,
+                      premium_subscription_count: row.guild.plan !== 'Free',
+                      approximate_member_count: row.guild.member_count,
+                    })
+                  : null,
+              )
+              .filter(Boolean)
           : [];
 
         if (!isMounted) return;
-        setGuilds(normalized.length ? normalized : MOCK_GUILDS);
+        setGuilds(normalized);
       } catch (error) {
-        console.error('Failed to fetch Discord guilds', error);
-        if (isMounted) {
-          setGuilds(MOCK_GUILDS);
-        }
+        console.error('Failed to fetch guilds for user', error);
+        if (isMounted) setGuilds([]);
       }
     };
 
