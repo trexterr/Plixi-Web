@@ -31,8 +31,11 @@ export default function ServerPickerPage() {
   };
 
   return (
-    <section className="server-picker">
-      <div className="panel">
+    <section
+      className="server-picker"
+      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '40px 0' }}
+    >
+      <div className="panel" style={{ maxWidth: 720, width: '100%' }}>
         <header>
           <p className="eyebrow">Server access</p>
           <h1>Select a Discord server</h1>
@@ -40,7 +43,7 @@ export default function ServerPickerPage() {
         </header>
 
         {sortedGuilds.length ? (
-          <ul className="server-picker__list">
+          <ul className="server-picker__list" style={{ display: 'grid', gap: '12px' }}>
             {sortedGuilds.map((guild) => (
               <li key={guild.id}>
                 <button
@@ -61,7 +64,7 @@ export default function ServerPickerPage() {
             ))}
           </ul>
         ) : (
-          <div className="server-picker__empty">
+          <div className="server-picker__empty" style={{ textAlign: 'center' }}>
             <p>No servers found for this account. Make sure your Discord user is added with manage access.</p>
           </div>
         )}

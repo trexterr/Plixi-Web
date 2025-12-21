@@ -71,23 +71,28 @@ const extractDiscordUserId = (user) => {
     null;
 
   if (!rawId) return null;
-  const numeric = Number(rawId);
-  return Number.isFinite(numeric) ? numeric : rawId;
+  return String(rawId);
 };
 
 const normalizeDiscordGuild = (guild) => {
   if (!guild?.id || !guild?.name) return null;
+  const id = String(guild.id);
   const iconHash = guild.icon_hash || guild.icon;
   const iconUrl =
-    iconHash && guild.id
-      ? `https://cdn.discordapp.com/icons/${guild.id}/${iconHash}.png?size=64`
+    iconHash && id
+      ? `https://cdn.discordapp.com/icons/${id}/${iconHash}.png?size=64`
       : '🛰️';
 
   return {
-    id: guild.id,
+    id,
     name: guild.name,
     icon: iconUrl,
-    memberCount: guild.approximate_member_count ?? null,
+    memberCount:
+      typeof guild.approximate_member_count === 'number'
+        ? guild.approximate_member_count
+        : Number.isFinite(Number(guild.approximate_member_count))
+          ? Number(guild.approximate_member_count)
+          : null,
     premium: Boolean(guild.premium_subscription_count),
   };
 };
