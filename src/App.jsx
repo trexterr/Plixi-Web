@@ -56,6 +56,24 @@ const mapDiscordUser = (sessionUser) => {
   };
 };
 
+const extractDiscordUserId = (user) => {
+  const metadata = user?.user_metadata ?? {};
+  const identities = user?.identities ?? [];
+  const identityData = identities.find((id) => id?.provider === 'discord')?.identity_data ?? {};
+
+  const rawId =
+    metadata.provider_id ||
+    metadata.user_id ||
+    metadata.sub ||
+    identityData.id ||
+    identityData.sub ||
+    null;
+
+  if (!rawId) return null;
+  const numeric = Number(rawId);
+  return Number.isFinite(numeric) ? numeric : rawId;
+};
+
 const normalizeDiscordGuild = (guild) => {
   if (!guild?.id || !guild?.name) return null;
   const iconHash = guild.icon_hash || guild.icon;
@@ -116,14 +134,9 @@ function App() {
       if (!sessionUser) return setGuilds([]);
 
       try {
-        const metadata = sessionUser.metadata ?? {};
-        const userId =
-          metadata.provider_id ||
-          metadata.user_id ||
-          metadata.sub ||
-          sessionUser.id ||
-          null;
-        if (!userId) {
+        const { data: userData } = await supabase.auth.getUser();
+        const discordId = extractDiscordUserId(userData?.user ?? null) || extractDiscordUserId(sessionUser);
+        if (!discordId) {
           setGuilds([]);
           return;
         }
@@ -143,7 +156,7 @@ function App() {
             )
           `,
           )
-          .eq('user_id', userId)
+          .eq('user_id', discordId)
           .eq('can_manage', true);
 
         if (error) throw error;
