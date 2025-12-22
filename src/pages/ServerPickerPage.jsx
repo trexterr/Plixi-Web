@@ -106,8 +106,8 @@ export default function ServerPickerPage({ sessionUser }) {
               display: 'flex',
               flexWrap: 'wrap',
               justifyContent: 'center',
-              gap: '18px 20px',
-              maxWidth: 900,
+              gap: '16px 18px',
+              maxWidth: 760,
             }}
           >
             {sortedGuilds.map((guild) => (
@@ -117,8 +117,7 @@ export default function ServerPickerPage({ sessionUser }) {
                   className={`server-card${guild.id === selectedGuildId ? ' active' : ''}`}
                   onClick={() => handleSelect(guild.id)}
                   style={{
-                    width: 180,
-                    height: 200,
+                    width: 150,
                     borderRadius: 14,
                     border: guild.id === selectedGuildId ? '2px solid #8ae2ff' : '1px solid rgba(255,255,255,0.08)',
                     background: 'linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))',
@@ -126,28 +125,29 @@ export default function ServerPickerPage({ sessionUser }) {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: 12,
+                    gap: 8,
+                    padding: '14px 10px 18px',
                     color: '#fff',
                     cursor: 'pointer',
                     transition: 'transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease',
                     boxShadow: guild.id === selectedGuildId ? '0 12px 30px rgba(138, 226, 255, 0.25)' : '0 10px 28px rgba(0,0,0,0.35)',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-3px)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
                     e.currentTarget.style.borderColor = '#8ae2ff';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.borderColor = guild.id === selectedGuildId ? '#8ae2ff' : '2px solid rgba(255,255,255,0.08)';
+                    e.currentTarget.style.borderColor = guild.id === selectedGuildId ? '#8ae2ff' : '1px solid rgba(255,255,255,0.08)';
                   }}
                 >
                   <span
                     className="server-card__icon"
                     aria-hidden="true"
                     style={{
-                      width: 110,
-                      height: 110,
-                      borderRadius: 14,
+                      width: 96,
+                      height: 96,
+                      borderRadius: 12,
                       overflow: 'hidden',
                       background: 'rgba(255,255,255,0.04)',
                       display: 'inline-flex',
@@ -158,25 +158,24 @@ export default function ServerPickerPage({ sessionUser }) {
                   >
                     {renderGuildIcon(guild)}
                   </span>
-                  <span className="server-card__meta" style={{ textAlign: 'center', maxWidth: 180 }}>
+                  <span className="server-card__meta" style={{ textAlign: 'center', maxWidth: 160 }}>
                     <strong style={{ display: 'block', fontSize: 15 }}>{guild.name}</strong>
-                    <span style={{ display: 'block', fontSize: 12, opacity: 0.8, marginTop: 2 }}>
-                      {guild.memberCount ? `${guild.memberCount.toLocaleString()} members` : 'Member count unavailable'}
-                    </span>
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        marginTop: 6,
-                        padding: '2px 8px',
-                        borderRadius: 999,
-                        background: 'rgba(255,255,255,0.08)',
-                        fontSize: 11,
-                        letterSpacing: 0.3,
-                        textTransform: 'uppercase',
-                      }}
-                    >
-                      {guild.plan || 'Free'}
-                    </span>
+                    {guild.plan ? (
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          marginTop: 6,
+                          padding: '2px 8px',
+                          borderRadius: 999,
+                          background: 'rgba(255,255,255,0.08)',
+                          fontSize: 11,
+                          letterSpacing: 0.3,
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {guild.plan}
+                      </span>
+                    ) : null}
                   </span>
                 </button>
               </li>

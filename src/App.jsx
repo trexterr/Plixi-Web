@@ -64,7 +64,7 @@ const normalizeDiscordGuild = (guild) => {
   const plan = typeof guild.plan === 'string' && guild.plan.trim() ? guild.plan.trim() : 'Free';
   const iconUrl =
     iconHash && id
-      ? `https://cdn.discordapp.com/icons/${id}/${iconHash}.png?size=64`
+      ? `https://cdn.discordapp.com/icons/${id}/${iconHash}.png?size=512`
       : '🛰️';
 
   return {
