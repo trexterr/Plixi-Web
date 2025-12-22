@@ -162,9 +162,12 @@ function App() {
         }
 
         if (!discordId) {
+          console.debug('[guilds] No discordId resolved from session/metadata/users_web');
           setGuilds([]);
           return;
         }
+
+        console.debug('[guilds] Using discordId', discordId);
 
         const { data: memberships, error: membershipError } = await supabase
           .from('user_guilds')
@@ -174,6 +177,8 @@ function App() {
 
         if (membershipError) throw membershipError;
 
+        console.debug('[guilds] user_guilds rows', memberships);
+
         const guildIds = Array.isArray(memberships)
           ? memberships
               .map((row) => (row?.guild_id !== undefined && row.guild_id !== null ? String(row.guild_id) : null))
@@ -181,6 +186,7 @@ function App() {
           : [];
 
         if (!guildIds.length) {
+          console.debug('[guilds] No guildIds found for discordId', discordId);
           setGuilds([]);
           return;
         }
@@ -191,6 +197,8 @@ function App() {
           .in('guild_id', guildIds);
 
         if (guildError) throw guildError;
+
+        console.debug('[guilds] guild rows', guildRows);
 
         const normalized = Array.isArray(guildRows)
           ? guildRows
