@@ -130,7 +130,7 @@ function App() {
 
         const { data: profile, error: profileError } = await supabase
           .from('users_web')
-          .select('discord_id_text:discord_id::text')
+          .select('discord_id::text')
           .eq('id', sessionUser.id)
           .maybeSingle();
 
@@ -138,8 +138,8 @@ function App() {
           console.error('[guilds] Failed to load profile discord_id', profileError);
         }
 
-        const discordIdRaw = profile?.discord_id_text ?? null;
-        const discordId = discordIdRaw !== null && discordIdRaw !== undefined ? String(discordIdRaw) : null;
+        const discordIdField = profile ? profile['discord_id::text'] : null;
+        const discordId = discordIdField !== null && discordIdField !== undefined ? String(discordIdField) : null;
 
         if (!discordId) {
           console.log('[guilds] No discord_id linked to this user in users_web');
