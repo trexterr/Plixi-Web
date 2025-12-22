@@ -57,23 +57,6 @@ const mapDiscordUser = (sessionUser) => {
   };
 };
 
-const extractDiscordUserId = (user) => {
-  const metadata = user?.user_metadata ?? {};
-  const identities = user?.identities ?? [];
-  const identityData = identities.find((id) => id?.provider === 'discord')?.identity_data ?? {};
-
-  const rawId =
-    metadata.provider_id ||
-    metadata.user_id ||
-    metadata.sub ||
-    identityData.id ||
-    identityData.sub ||
-    null;
-
-  if (!rawId) return null;
-  return String(rawId);
-};
-
 const normalizeDiscordGuild = (guild) => {
   if (!guild?.id || !guild?.name) return null;
   const id = String(guild.id);
@@ -145,48 +128,30 @@ function App() {
       try {
         console.log('[guilds] Starting fetch with sessionUser', sessionUser);
 
-        const { data: userData, error: userError } = await supabase.auth.getUser();
-        if (userError) {
-          console.error('[guilds] getUser error', userError);
-        }
-        let discordId = extractDiscordUserId(userData?.user ?? null) || extractDiscordUserId(sessionUser);
+        const { data: profile, error: profileError } = await supabase
+          .from('users_web')
+          .select('discord_id')
+          .eq('id', sessionUser.id)
+          .maybeSingle();
 
-        // Fallback: read discord_id from users_web if metadata is missing
-        if (!discordId) {
-          try {
-            const { data: profile } = await supabase
-              .from('users_web')
-              .select('discord_id')
-              .eq('id', sessionUser.id)
-              .maybeSingle();
-            if (profile?.discord_id) {
-              discordId = String(profile.discord_id);
-            }
-          } catch (profileError) {
-            console.error('Failed to load profile discord_id', profileError);
-          }
+        if (profileError) {
+          console.error('[guilds] Failed to load profile discord_id', profileError);
         }
 
+        const discordId = profile?.discord_id ?? null;
+
         if (!discordId) {
-          console.log('[guilds] No discordId resolved from session/metadata/users_web');
+          console.log('[guilds] No discord_id linked to this user in users_web');
           setGuilds([]);
           return;
         }
 
-        const candidateIds = Array.from(
-          new Set(
-            [discordId, Number(discordId)].filter(
-              (val) => val !== undefined && val !== null && val !== '' && !Number.isNaN(val),
-            ),
-          ),
-        );
-
-        console.log('[guilds] Using IDs', candidateIds);
+        console.log('[guilds] Using discordId', discordId);
 
         const { data: memberships, error: membershipError } = await supabase
           .from('user_guilds')
           .select('guild_id')
-          .in('user_id', candidateIds)
+          .eq('user_id', discordId)
           .eq('can_manage', true);
 
         if (membershipError) throw membershipError;
@@ -200,7 +165,7 @@ function App() {
           : [];
 
         if (!guildIds.length) {
-          console.log('[guilds] No guildIds found for IDs', candidateIds);
+          console.log('[guilds] No guildIds found for discordId', discordId);
           setGuilds([]);
           return;
         }
@@ -269,11 +234,7 @@ function App() {
           metadata.sub ||
           null;
 
-        const discordIdNumber = rawDiscordId ? Number(rawDiscordId) : null;
-        const normalizedDiscordId =
-          discordIdNumber !== null && Number.isFinite(discordIdNumber)
-            ? discordIdNumber
-            : null;
+        const normalizedDiscordId = rawDiscordId ? String(rawDiscordId) : null;
 
         const username =
           metadata.full_name ||
