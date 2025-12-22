@@ -166,7 +166,6 @@ const mapServerShopRow = (row) =>
     ? null
     : {
         serverShop: {
-          enabled: normalizeBoolean(row.enabled, true),
           name: row.name ?? 'Serverwide Shop',
           description: row.description ?? '',
           layout: row.layout ?? 'grid',
@@ -322,7 +321,6 @@ export async function persistGuildSettingsToSupabase(guildId, guildSettings) {
     supabase.from('serverwide_shop').upsert(
       {
         guild_id: numericId,
-        enabled: Boolean(guildSettings.serverShop?.enabled ?? true),
         name: guildSettings.serverShop?.name ?? 'Serverwide Shop',
         description: guildSettings.serverShop?.description ?? '',
         layout: guildSettings.serverShop?.layout ?? 'grid',

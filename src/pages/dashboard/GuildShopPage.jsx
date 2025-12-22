@@ -198,7 +198,6 @@ export default function GuildShopPage() {
     };
   }, [
     selectedGuild?.id,
-    serverShop.enabled,
     serverShop.name,
     serverShop.description,
     serverShop.layout,
