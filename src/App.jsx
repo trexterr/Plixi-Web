@@ -138,11 +138,17 @@ function App() {
 
     const fetchGuilds = async () => {
       if (!sessionUser) {
+        console.log('[guilds] No session user yet');
         return setGuilds([]);
       }
 
       try {
-        const { data: userData } = await supabase.auth.getUser();
+        console.log('[guilds] Starting fetch with sessionUser', sessionUser);
+
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError) {
+          console.error('[guilds] getUser error', userError);
+        }
         let discordId = extractDiscordUserId(userData?.user ?? null) || extractDiscordUserId(sessionUser);
 
         // Fallback: read discord_id from users_web if metadata is missing
@@ -162,22 +168,30 @@ function App() {
         }
 
         if (!discordId) {
-          console.debug('[guilds] No discordId resolved from session/metadata/users_web');
+          console.log('[guilds] No discordId resolved from session/metadata/users_web');
           setGuilds([]);
           return;
         }
 
-        console.debug('[guilds] Using discordId', discordId);
+        const candidateIds = Array.from(
+          new Set(
+            [discordId, Number(discordId)].filter(
+              (val) => val !== undefined && val !== null && val !== '' && !Number.isNaN(val),
+            ),
+          ),
+        );
+
+        console.log('[guilds] Using IDs', candidateIds);
 
         const { data: memberships, error: membershipError } = await supabase
           .from('user_guilds')
           .select('guild_id')
-          .eq('user_id', discordId)
+          .in('user_id', candidateIds)
           .eq('can_manage', true);
 
         if (membershipError) throw membershipError;
 
-        console.debug('[guilds] user_guilds rows', memberships);
+        console.log('[guilds] user_guilds rows', memberships);
 
         const guildIds = Array.isArray(memberships)
           ? memberships
@@ -186,7 +200,7 @@ function App() {
           : [];
 
         if (!guildIds.length) {
-          console.debug('[guilds] No guildIds found for discordId', discordId);
+          console.log('[guilds] No guildIds found for IDs', candidateIds);
           setGuilds([]);
           return;
         }
@@ -198,7 +212,7 @@ function App() {
 
         if (guildError) throw guildError;
 
-        console.debug('[guilds] guild rows', guildRows);
+        console.log('[guilds] guild rows', guildRows);
 
         const normalized = Array.isArray(guildRows)
           ? guildRows
@@ -217,7 +231,7 @@ function App() {
         if (!isMounted) return;
         setGuilds(normalized);
       } catch (error) {
-        console.error('Failed to fetch guilds for user', error);
+        console.error('[guilds] Failed to fetch guilds for user', error);
         if (isMounted) setGuilds([]);
       }
     };
