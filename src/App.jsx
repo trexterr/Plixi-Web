@@ -151,7 +151,7 @@ function App() {
         const { data: memberships, error: membershipError } = await supabase
           .from('user_guilds')
           .select('guild_id')
-          .filter('user_id::text', 'eq', discordId)
+          .eq('user_id', discordId)
           .eq('can_manage', true);
 
         if (membershipError) throw membershipError;
@@ -170,11 +170,10 @@ function App() {
           return;
         }
 
-        const guildIdList = guildIds.join(',');
         const { data: guildRows, error: guildError } = await supabase
           .from('guilds')
           .select('guild_id, name, plan, member_count, owner_id, last_updated, icon_hash')
-          .filter('guild_id::text', 'in', `(${guildIdList})`);
+          .in('guild_id', guildIds);
 
         if (guildError) throw guildError;
 
