@@ -5,6 +5,7 @@ import { fetchGuildSettingsFromSupabase, persistGuildSettingsToSupabase } from '
 
 const DashboardDataContext = createContext(null);
 const STORAGE_KEY = 'plixi-dashboard-data-v1';
+const isDeepEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 const cloneDefaults = () => JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 const createLastSavedMap = () =>
@@ -149,6 +150,7 @@ export function DashboardDataProvider({ children }) {
   const { guilds, selectedGuildId } = useSelectedGuild();
 
   const hydratedGuildsRef = useRef(new Set());
+  const lastPersistedGuildRef = useRef({});
 
   const [state, dispatch] = useReducer(
     reducer,
@@ -198,10 +200,12 @@ export function DashboardDataProvider({ children }) {
           const remoteData = await fetchGuildSettingsFromSupabase(guild.id);
           if (remoteData) {
             dispatch({ type: 'HYDRATE_GUILD', guildId: guild.id, data: remoteData });
+            lastPersistedGuildRef.current[guild.id] = remoteData;
           } else {
             // Seed defaults for this guild if no records exist yet.
             const defaultGuildSettings = createGuildRecord().settings.guild;
             await persistGuildSettingsToSupabase(guild.id, defaultGuildSettings);
+            lastPersistedGuildRef.current[guild.id] = defaultGuildSettings;
             dispatch({ type: 'HYDRATE_GUILD', guildId: guild.id, data: defaultGuildSettings });
           }
         } catch (error) {
@@ -232,9 +236,15 @@ export function DashboardDataProvider({ children }) {
     if (!activeGuildId) return;
     if (section === 'guild') {
       const guildSettings = state.records[activeGuildId]?.settings?.guild;
+      const previous = lastPersistedGuildRef.current[activeGuildId];
+      if (previous && isDeepEqual(previous, guildSettings)) {
+        return false;
+      }
       await persistGuildSettingsToSupabase(activeGuildId, guildSettings);
+      lastPersistedGuildRef.current[activeGuildId] = guildSettings;
     }
     dispatch({ type: 'SAVE_SECTION', guildId: activeGuildId, section, timestamp: new Date().toISOString() });
+    return true;
   };
 
   const value = useMemo(

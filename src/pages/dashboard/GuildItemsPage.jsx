@@ -24,14 +24,13 @@ export default function GuildItemsPage() {
       try {
         const { data, error } = await supabase
           .from('server_items')
-          .select('item_id, name, description, rarity, price')
+          .select('item_id, name, rarity, price')
           .eq('guild_id', selectedGuild.id);
         if (error) throw error;
         const items = Array.isArray(data)
           ? data.map((row) => ({
               id: String(row.item_id),
               name: row.name ?? 'Untitled item',
-              description: row.description ?? '',
               rarity: row.rarity ?? 'Common',
               price: row.price ?? null,
               image: '',
@@ -93,7 +92,6 @@ export default function GuildItemsPage() {
     const updatePayload = {};
     if (patch.name !== undefined) updatePayload.name = patch.name;
     if (patch.rarity !== undefined) updatePayload.rarity = patch.rarity;
-    if (patch.description !== undefined) updatePayload.description = patch.description;
     if (patch.price !== undefined) updatePayload.price = patch.price;
 
     if (!Object.keys(updatePayload).length) return;
@@ -122,17 +120,15 @@ export default function GuildItemsPage() {
         .insert({
           guild_id: selectedGuild?.id,
           name: draftItem.name,
-          description: draftItem.description ?? '',
           rarity: draftItem.rarity ?? 'Common',
           price: draftItem.price ?? null,
         })
-        .select('item_id, name, description, rarity, price')
+        .select('item_id, name, rarity, price')
         .single();
       if (error) throw error;
       const persisted = {
         id: String(data.item_id),
         name: data.name ?? draftItem.name,
-        description: data.description ?? '',
         rarity: data.rarity ?? draftItem.rarity ?? 'Common',
         price: data.price ?? draftItem.price ?? null,
         image: draftItem.image ?? '',

@@ -18,8 +18,10 @@ export default function useGuildSettings() {
 
   const saveGuild = async (message = 'Guild settings saved') => {
     try {
-      await saveSection('guild');
-      showToast(message);
+      const didSave = await saveSection('guild');
+      if (didSave) {
+        showToast(message);
+      }
     } catch (error) {
       console.error('Failed to save guild settings', error?.causes ?? error);
       showToast('Failed to save guild settings', 'error');
