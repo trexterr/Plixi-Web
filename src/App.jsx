@@ -146,19 +146,12 @@ function App() {
           return;
         }
 
-        const discordIdNumber = Number(discordId);
-        if (!Number.isFinite(discordIdNumber)) {
-          console.log('[guilds] Discord ID is not numeric', discordId);
-          setGuilds([]);
-          return;
-        }
-
-        console.log('[guilds] Using discordId', discordIdNumber);
+        console.log('[guilds] Using discordId', discordId);
 
         const { data: memberships, error: membershipError } = await supabase
           .from('user_guilds')
           .select('guild_id')
-          .eq('user_id', discordIdNumber)
+          .filter('user_id::text', 'eq', discordId)
           .eq('can_manage', true);
 
         if (membershipError) throw membershipError;
@@ -177,10 +170,11 @@ function App() {
           return;
         }
 
+        const guildIdList = guildIds.join(',');
         const { data: guildRows, error: guildError } = await supabase
           .from('guilds')
           .select('guild_id, name, plan, member_count, owner_id, last_updated, icon_hash')
-          .in('guild_id', guildIds);
+          .filter('guild_id::text', 'in', `(${guildIdList})`);
 
         if (guildError) throw guildError;
 
@@ -241,9 +235,7 @@ function App() {
           metadata.sub ||
           null;
 
-        const discordIdNumber = rawDiscordId ? Number(rawDiscordId) : null;
-        const normalizedDiscordId =
-          discordIdNumber !== null && Number.isFinite(discordIdNumber) ? discordIdNumber : null;
+        const normalizedDiscordId = rawDiscordId ? String(rawDiscordId) : null;
 
         const username =
           metadata.full_name ||
