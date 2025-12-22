@@ -1,5 +1,5 @@
 export const TOP_NAV_LINKS = [
-  { label: 'Dashboard', to: '/app', end: true },
+  { label: 'Dashboard', to: '/servers', end: true },
   { label: 'Docs', to: '/docs', end: true },
   { label: 'Support Server', external: true, href: 'https://discord.gg/qyajpWYHja' },
 ];

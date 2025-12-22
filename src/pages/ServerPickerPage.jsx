@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelectedGuild } from '../context/SelectedGuildContext';
+import { supabase } from '../lib/supabase';
 
 const INVITE_URL =
   'https://discord.com/oauth2/authorize?client_id=1371993653060436029&permissions=8&integration_type=0&scope=bot+applications.commands';
@@ -18,7 +19,7 @@ const renderGuildIcon = (guild) => {
   );
 };
 
-export default function ServerPickerPage({ debugInfo }) {
+export default function ServerPickerPage({ sessionUser }) {
   const { guilds, selectGuild, selectedGuildId } = useSelectedGuild();
   const navigate = useNavigate();
 
@@ -33,6 +34,20 @@ export default function ServerPickerPage({ debugInfo }) {
 
   const handleInvite = () => {
     window.open(INVITE_URL, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleLogin = async () => {
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: 'discord',
+        options: {
+          scopes: 'identify guilds',
+          redirectTo: `${window.location.origin}/auth`,
+        },
+      });
+    } catch (error) {
+      console.error('Discord login failed', error);
+    }
   };
 
   return (
@@ -66,7 +81,16 @@ export default function ServerPickerPage({ debugInfo }) {
           </p>
         </header>
 
-        {sortedGuilds.length ? (
+        {!sessionUser ? (
+          <div className="server-picker__empty" style={{ textAlign: 'center', marginBottom: 28 }}>
+            <p>Login with Discord to view and manage your servers.</p>
+            <div className="server-picker__actions" style={{ textAlign: 'center', marginTop: 12 }}>
+              <button type="button" className="primary-btn" onClick={handleLogin}>
+                Login with Discord
+              </button>
+            </div>
+          </div>
+        ) : sortedGuilds.length ? (
           <ul
             className="server-picker__list"
             style={{
@@ -159,11 +183,6 @@ export default function ServerPickerPage({ debugInfo }) {
         ) : (
           <div className="server-picker__empty" style={{ textAlign: 'center', marginBottom: 28 }}>
             <p>No servers found for this account. Make sure your Discord user is added with manage access.</p>
-            {debugInfo ? (
-              <p style={{ marginTop: 8, fontSize: 12, opacity: 0.7 }}>
-                Debug: {debugInfo}
-              </p>
-            ) : null}
           </div>
         )}
 

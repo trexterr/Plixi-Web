@@ -39,7 +39,7 @@ export default function MarketingHomePage() {
             to stay active, competitive, and invested.
           </p>
           <div className="cta-group">
-            <Link to="/app" className="primary-btn">
+            <Link to="/servers" className="primary-btn">
               Add to Discord
             </Link>
             <button type="button" className="ghost-btn" onClick={scrollToFeatures}>
