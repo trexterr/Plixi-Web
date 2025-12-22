@@ -172,14 +172,12 @@ function App() {
           return;
         }
 
-        const inList = guildIds.map(id => `'${id}'`).join(',');
-
         const { data: guildRows, error: guildError } = await supabase
           .from('guilds')
-          .select('guild_id, name, plan, member_count, owner_id, last_updated, icon_hash')
-          .filter('guild_id', 'in', `(${inList})`);
+          .select('guild_id, name, plan, member_count, owner_id, icon_hash')
+          .in('guild_id', guildIds);
 
-        if (guildError) throw guildErrsor;
+        if (guildError) throw guildError;
 
         console.log('[guilds] guild rows', guildRows);
 
