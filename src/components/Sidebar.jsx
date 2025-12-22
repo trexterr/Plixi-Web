@@ -13,7 +13,7 @@ export default function Sidebar() {
   const renderGuildIcon = (guild) => {
     const icon = guild?.icon;
     if (typeof icon === 'string' && icon.startsWith('http')) {
-      return <img src={icon} alt={`${guild?.name ?? 'Guild'} icon`} />;
+      return <img src={icon} alt={`${guild?.name ?? 'Guild'} icon`} style={{ borderRadius: 12 }} />;
     }
     return icon ?? '🛰️';
   };

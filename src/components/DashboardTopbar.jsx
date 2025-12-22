@@ -29,18 +29,7 @@ export default function DashboardTopbar({ isReady }) {
       <div className="topbar-insights">
         <div>
           <span>Active guild</span>
-          {isReady ? (
-            <div className="guild-chip">
-              {selectedGuild?.icon ? (
-                <img src={selectedGuild.icon} alt={selectedGuild?.name ?? 'Guild'} />
-              ) : (
-                <span className="fallback-icon">🛰️</span>
-              )}
-              <strong>{selectedGuild?.name}</strong>
-            </div>
-          ) : (
-            <LoadingSkeleton width="180px" />
-          )}
+          {isReady ? <strong>{selectedGuild?.name}</strong> : <LoadingSkeleton width="180px" />}
         </div>
         <div>
           <span>Members</span>
