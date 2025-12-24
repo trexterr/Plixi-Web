@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
 const formatCurrency = (amount) => amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -12,6 +12,17 @@ export default function PricingCard({ plan, billing, emphasized }) {
       ? `$${formatCurrency(rate * 12)} first year · $${formatCurrency(afterRate * 12)} after`
       : `$${rate} first month · $${afterRate} after`;
   const planKey = `${plan.id}_${billing}`;
+
+  // Reset the button state if the user navigates back from Stripe (bfcache pageshow).
+  useEffect(() => {
+    const resetLoading = () => setLoading(false);
+    window.addEventListener('pageshow', resetLoading);
+    window.addEventListener('focus', resetLoading);
+    return () => {
+      window.removeEventListener('pageshow', resetLoading);
+      window.removeEventListener('focus', resetLoading);
+    };
+  }, []);
 
   const handleCheckout = async () => {
     if (loading) return;
