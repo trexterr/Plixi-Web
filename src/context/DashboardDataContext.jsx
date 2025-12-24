@@ -14,14 +14,27 @@ const createLastSavedMap = () =>
     return acc;
   }, {});
 
+const deepMergeDefaults = (defaults, overrides) => {
+  if (Array.isArray(defaults)) {
+    return Array.isArray(overrides) ? overrides : defaults;
+  }
+  if (defaults && typeof defaults === 'object') {
+    const result = { ...defaults };
+    if (overrides && typeof overrides === 'object' && !Array.isArray(overrides)) {
+      Object.keys(overrides).forEach((key) => {
+        result[key] = deepMergeDefaults(defaults[key], overrides[key]);
+      });
+    }
+    return result;
+  }
+  return overrides !== undefined ? overrides : defaults;
+};
+
 const ensureRecordShape = (record) => {
   const defaults = cloneDefaults();
   const safeSettings = {};
   Object.keys(defaults).forEach((section) => {
-    safeSettings[section] = {
-      ...defaults[section],
-      ...(record?.settings?.[section] ?? {}),
-    };
+    safeSettings[section] = deepMergeDefaults(defaults[section], record?.settings?.[section]);
   });
   if (safeSettings.guild?.raffles) {
     const storedActive = record?.settings?.guild?.raffles?.active;

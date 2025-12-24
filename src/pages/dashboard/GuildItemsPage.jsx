@@ -17,6 +17,19 @@ export default function GuildItemsPage() {
   const [draftItem, setDraftItem] = useState(null);
   const [loadingItems, setLoadingItems] = useState(false);
 
+  const guildItems = useMemo(() => {
+    const base = DEFAULT_SETTINGS.guild.items;
+    const incoming = guild?.items;
+    const auditLog = { ...base.auditLog, ...(incoming?.auditLog ?? {}) };
+    const catalog = Array.isArray(incoming?.catalog) ? incoming.catalog : base.catalog;
+    return {
+      ...base,
+      ...(incoming ?? {}),
+      auditLog,
+      catalog,
+    };
+  }, [guild?.items]);
+
   useEffect(() => {
     const loadItems = async () => {
       if (!selectedGuild?.id) return;
@@ -161,7 +174,7 @@ export default function GuildItemsPage() {
   };
 
   const filteredItems = useMemo(() => {
-    const baseList = guild.items.catalog;
+    const baseList = guildItems.catalog;
     const query = itemSearch.trim().toLowerCase();
     const matches = query ? baseList.filter((item) => item.name.toLowerCase().includes(query)) : baseList.slice();
     matches.sort((a, b) => {
@@ -178,26 +191,26 @@ export default function GuildItemsPage() {
       return aName.localeCompare(bName);
     });
     return matches;
-  }, [guild.items.catalog, itemSearch, pinnedItemId]);
+  }, [guildItems.catalog, itemSearch, pinnedItemId]);
 
-  const itemCount = guild.items.catalog.length;
+  const itemCount = guildItems.catalog.length;
 
   useEffect(() => {
     if (isCreating) return;
-    if (!guild.items.catalog.length) {
+    if (!guildItems.catalog.length) {
       setSelectedItemId(null);
       return;
     }
-    if (!selectedItemId || !guild.items.catalog.some((item) => item.id === selectedItemId)) {
-      setSelectedItemId(guild.items.catalog[0].id);
+    if (!selectedItemId || !guildItems.catalog.some((item) => item.id === selectedItemId)) {
+      setSelectedItemId(guildItems.catalog[0].id);
     }
-  }, [guild.items.catalog, selectedItemId, isCreating]);
+  }, [guildItems.catalog, selectedItemId, isCreating]);
 
   const selectedItem = isCreating
     ? draftItem
     : selectedItemId
-      ? guild.items.catalog.find((item) => item.id === selectedItemId) ?? null
-      : guild.items.catalog[0] ?? null;
+      ? guildItems.catalog.find((item) => item.id === selectedItemId) ?? null
+      : guildItems.catalog[0] ?? null;
 
   useEffect(() => {
     if (!selectedItemId) {
@@ -211,10 +224,10 @@ export default function GuildItemsPage() {
   }, [selectedItemId]);
 
   useEffect(() => {
-    if (!guild.items.catalog.length && !isCreating && editingCatalog) {
+    if (!guildItems.catalog.length && !isCreating && editingCatalog) {
       beginNewItem();
     }
-  }, [guild.items.catalog.length, isCreating, editingCatalog]);
+  }, [guildItems.catalog.length, isCreating, editingCatalog]);
 
   if (editingCatalog) {
     return (
@@ -357,11 +370,11 @@ export default function GuildItemsPage() {
           icon="⚙️"
           title="Settings"
           description="Toggle whether the items system is available to members."
-          status={guild.items.enabled ? 'Active' : 'Disabled'}
+          status={guildItems.enabled ? 'Active' : 'Disabled'}
         >
           <ToggleSwitch
             label="Enable items"
-            checked={guild.items.enabled}
+            checked={guildItems.enabled}
             onChange={(value) => updateGuild((prev) => ({ ...prev, items: { ...prev.items, enabled: value } }))}
           />
         </ModuleCard>
@@ -369,23 +382,23 @@ export default function GuildItemsPage() {
           icon="🎫"
           title="Items"
           description="Create equipment, cosmetics, or consumables."
-          status={`${guild.items.catalog.length} ${guild.items.catalog.length === 1 ? 'item' : 'items'}`}
+          status={`${guildItems.catalog.length} ${guildItems.catalog.length === 1 ? 'item' : 'items'}`}
         >
-          <p className="helper-text">{guild.items.catalog.length ? `${guild.items.catalog.length} items configured` : 'No items yet.'}</p>
-          <button type="button" className="primary-btn" onClick={() => setEditingCatalog(true)} disabled={!guild.items.enabled}>
+          <p className="helper-text">{guildItems.catalog.length ? `${guildItems.catalog.length} items configured` : 'No items yet.'}</p>
+          <button type="button" className="primary-btn" onClick={() => setEditingCatalog(true)} disabled={!guildItems.enabled}>
             Open Item List
           </button>
           <label className="text-control">
             <span>Rarity slots allowed</span>
             <NumberInput
               min={1}
-              value={guild.items.rarityCap}
+              value={guildItems.rarityCap}
               onChange={(value) => updateGuild((prev) => ({ ...prev, items: { ...prev.items, rarityCap: value } }))}
             />
           </label>
           <ToggleSwitch
             label="Item audit log"
-            checked={guild.items.auditLog.enabled}
+            checked={guildItems.auditLog.enabled}
             onChange={(value) =>
               updateGuild((prev) => ({
                 ...prev,
@@ -393,11 +406,11 @@ export default function GuildItemsPage() {
               }))
             }
           />
-          {guild.items.auditLog.enabled && (
+          {guildItems.auditLog.enabled && (
             <label className="text-control">
               <span>Log channel</span>
               <input
-                value={guild.items.auditLog.channel}
+                value={guildItems.auditLog.channel}
                 onChange={(event) =>
                   updateGuild((prev) => ({
                     ...prev,
