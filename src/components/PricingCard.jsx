@@ -16,11 +16,11 @@ export default function PricingCard({ plan, billing, emphasized }) {
   const handleCheckout = async () => {
     if (loading) return;
     setLoading(true);
+    let navigated = false;
     try {
       const { data, error } = await supabase.auth.getUser();
       if (error || !data?.user?.id) {
         alert('Please sign in to start a subscription.');
-        setLoading(false);
         return;
       }
 
@@ -37,21 +37,21 @@ export default function PricingCard({ plan, billing, emphasized }) {
         const body = await response.json().catch(() => ({}));
         console.error('Checkout session failed', body);
         alert(body?.error || 'Failed to start checkout. Please try again.');
-        setLoading(false);
         return;
       }
 
       const { url } = await response.json();
       if (url) {
+        navigated = true;
         window.location.href = url;
       } else {
         alert('Failed to start checkout. Please try again.');
-        setLoading(false);
       }
     } catch (err) {
       console.error('Checkout error', err);
       alert('Failed to start checkout. Please try again.');
-      setLoading(false);
+    } finally {
+      if (!navigated) setLoading(false);
     }
   };
 
