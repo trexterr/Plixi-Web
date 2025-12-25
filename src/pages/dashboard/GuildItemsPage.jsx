@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import SectionHeader from '../../components/SectionHeader';
 import ToggleSwitch from '../../components/ToggleSwitch';
 import NumberInput from '../../components/NumberInput';
@@ -16,6 +16,11 @@ export default function GuildItemsPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [draftItem, setDraftItem] = useState(null);
   const [loadingItems, setLoadingItems] = useState(false);
+  const updateGuildRef = useRef(updateGuild);
+
+  useEffect(() => {
+    updateGuildRef.current = updateGuild;
+  }, [updateGuild]);
 
   const guildItems = useMemo(() => {
     const base = DEFAULT_SETTINGS.guild.items;
@@ -54,7 +59,7 @@ export default function GuildItemsPage() {
               stock: 0,
             }))
           : [];
-        updateGuild((prev) => ({
+        updateGuildRef.current((prev) => ({
           ...prev,
           items: {
             ...prev.items,
@@ -68,7 +73,7 @@ export default function GuildItemsPage() {
       }
     };
     loadItems();
-  }, [selectedGuild?.id, updateGuild]);
+  }, [selectedGuild?.id]);
 
   const beginNewItem = () => {
     const newItem = { id: `item-${Date.now()}`, name: 'New item', rarity: 'Common', image: '', stock: 0 };
