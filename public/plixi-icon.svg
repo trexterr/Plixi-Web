@@ -1,14 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 256 256">
   <defs>
     <clipPath id="circle-mask">
       <circle cx="128" cy="128" r="128" />
     </clipPath>
   </defs>
   <image
-    href="/plixi-icon.png"
     width="256"
     height="256"
     clip-path="url(#circle-mask)"
     preserveAspectRatio="xMidYMid slice"
+    href="/plixi-icon.png"
+    xlink:href="/plixi-icon.png"
   />
 </svg>
